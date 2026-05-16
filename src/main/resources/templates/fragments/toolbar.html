@@ -1,0 +1,47 @@
+<div th:fragment="toolbar(products, query)" class="toolbar">
+    <div class="toolbar-left">
+        <div class="sort-dropdown">
+            <span class="current-sort" th:text="${param.sort != null and param.sort[0] == 'price,desc'} ? 'По убыванию цены' : 'По возрастанию цены'">
+                По возрастанию цены
+            </span>
+            <div class="arrow-down"></div>
+
+            <!-- Dropdown меню -->
+            <div class="sort-dropdown-menu">
+                <a th:href="@{/products(size=${products.size}, query=${query}, sort='price,asc')}"
+                   class="sort-option"
+                   th:classappend="${param.sort == null or param.sort[0] == 'price,asc'} ? 'active' : ''">
+                    По возрастанию цены
+                </a>
+                <a th:href="@{/products(size=${products.size}, query=${query}, sort='price,desc')}"
+                   class="sort-option"
+                   th:classappend="${param.sort != null and param.sort[0] == 'price,desc'} ? 'active' : ''">
+                    По убыванию цены
+                </a>
+            </div>
+        </div>
+
+        <span class="separator">|</span>
+        <span class="label">Сортировать по</span>
+
+        <div class="page-size-selector">
+            <a th:href="@{/products(size=10, query=${param.query})}"
+               class="size-link"
+               th:classappend="${products.size == 10} ? 'active' : ''">10</a>
+
+            <a th:href="@{/products(size=20, query=${param.query})}"
+               class="size-link"
+               th:classappend="${products.size == 20} ? 'active' : ''">20</a>
+
+            <a th:href="@{/products(size=50, query=${param.query})}"
+               class="size-link"
+               th:classappend="${products.size == 50} ? 'active' : ''">50</a>
+        </div>
+    </div>
+
+    <div class="toolbar-right">
+                    <span class="total-count"
+                          th:text="${products.numberOfElements + ' из ' + products.totalElements + ' товаров'}">
+                    </span>
+    </div>
+</div>

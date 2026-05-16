@@ -1,110 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rukonpin Store</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Qanelas:wght@400;500;600;700;800&display=swap" />
-    <link rel="stylesheet" href="/styles/index.css" />
+<head th:replace="~{fragments/head :: head('Каталог - Rukonpin Store')}">
 </head>
-
-
 <body>
 <div class="main-container">
     <div class="rectangle">
+        <!-- Header -->
+        <div th:replace="~{fragments/header :: header}"></div>
 
-        <header class="flex-row">
-            <div class="logo-wrapper">
-                <div class="logo">R</div>
-                <span class="rukonpin">Rukonpin</span>
-            </div>
-
-            <form class="frame" action="/products" method="get">
-                <div class="search-magnifying-glass"></div>
-                <div class="frame-2"><span class="showcase">showcase</span></div>
-                <input type="text" name="query" class="text-search" placeholder="Например macbook...">
-            </form>
-
-            <div class="header-actions">
-                <a href="/login" class="login-register">Войти или зарегистрироваться</a>
-
-                <div class="divider">|</div>
-
-                <a href="/cart" class="handbag-wrapper">
-                    <div class="handbag"></div>
-                    <div class="ellipse">
-                        <span class="count">3</span>
-                    </div>
-                </a>
-            </div>
-        </header>
-
+        <!-- Catalog Section -->
         <section class="catalog-section">
             <h1 class="catalog-title">Каталог</h1>
             <div class="divider-line"></div>
 
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <div class="sort-dropdown">
-                        <span class="current-sort">По возрастанию цены</span>
-                        <div class="arrow-down"></div>
-                    </div>
-
-                    <span class="separator">|</span>
-                    <span class="label">Сортировать по</span>
-
-                    <div class="page-size-selector">
-                        <a th:href="@{/products(size=10, query=${param.query})}"
-                           class="size-link"
-                           th:classappend="${products.size == 10} ? 'active' : ''">10</a>
-
-                        <a th:href="@{/products(size=20, query=${param.query})}"
-                           class="size-link"
-                           th:classappend="${products.size == 20} ? 'active' : ''">20</a>
-
-                        <a th:href="@{/products(size=50, query=${param.query})}"
-                           class="size-link active">50</a>
-                    </div>
-                </div>
-
-                <div class="toolbar-right">
-                    <span class="total-count"
-                          th:text="${products.numberOfElements + ' из ' + products.totalElements + ' товаров'}">
-                    </span>
-                </div>
-            </div>
+            <!-- Toolbar -->
+            <div th:replace="~{fragments/toolbar :: toolbar(${products}, ${query})}"></div>
         </section>
 
+        <!-- Products Grid -->
         <div class="products-grid">
-
-            <div class="product-card" th:each="product : ${products.content}">
-                <div class="product-image-container">
-                    <div class="overlay"></div>
-                    <a th:href="@{/products/{id}(id=${product.uuid})}">
-                        <img class="product-image"
-                             th:src="@{${product.imageUrl}}"
-                             th:alt="${product.name}">
-                    </a>
-                    <button class="add-to-cart-btn-overlay">В корзину</button>
-                </div>
-
-                <div class="product-info">
-                    <h3 class="product-name" th:text="${product.name}">Название товара</h3>
-                    <p class="product-price">
-                        <span th:text="${#numbers.formatDecimal(product.price, 0, 'WHITESPACE', 0, 'POINT')}">50 000</span> ₽
-                    </p>
-                </div>
-            </div>
-
+            <!-- Product Cards -->
+            <th:block th:replace="~{fragments/product-card :: product-cards(${products.content})}"></th:block>
         </div>
 
         <div class="divider-line"></div>
-        <div class="flex-row-cc">
-            <div class="github-icon"></div>
-            <span class="span-32">github.com/rukonpin</span>
-        </div>
+
+        <!-- Footer -->
+        <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
 </div>
-
 </body>
 </html>

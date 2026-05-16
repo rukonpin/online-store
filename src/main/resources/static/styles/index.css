@@ -26,7 +26,7 @@ button {
     flex-direction: column;
     max-width: 1200px;
     margin: 0 auto;
-    min-height: 100vh;
+    min-height: 90vh;
 }
 .rectangle {
     max-width: 1200px;
@@ -273,6 +273,7 @@ button {
 
 /* Выпадающий список сортировки */
 .sort-dropdown {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 9px;
@@ -282,6 +283,15 @@ button {
     border-radius: 10px;
     box-shadow: 0 1px 2.3px rgba(146, 147, 152, 0.11);
     cursor: pointer;
+    user-select: none;
+}
+
+.sort-dropdown:hover {
+    border-color: #e0e0e0;
+}
+
+.sort-dropdown.open .arrow-down {
+    transform: rotate(180deg);
 }
 
 .current-sort {
@@ -297,6 +307,55 @@ button {
     height: 19px;
     margin-right: -5px;
     background: url('../icons/arrow-down.svg') no-repeat center / contain;
+    transition: transform 0.3s ease;
+}
+
+/* Выпадающее меню */
+.sort-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    min-width: 100%;
+    background: #ffffff;
+    border: 1px solid #f6f6f6;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(146, 147, 152, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    overflow: hidden;
+    padding: 4px; /* Внутренний отступ для меню */
+}
+
+.sort-dropdown.open .sort-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.sort-option {
+    display: block;
+    padding: 10px 15px;
+    color: #799096;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border-radius: 8px; /* Всегда скруглённые углы */
+}
+
+.sort-option:hover {
+    background: #fafafa;
+}
+
+.sort-option.active {
+    color: #385962;
+    font-weight: 600;
+    background: #f5f6f7;
 }
 
 /* Выбор количества товаров (10, 20, 50) */

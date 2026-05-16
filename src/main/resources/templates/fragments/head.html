@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title} ?: 'Rukonpin Store'">Rukonpin Store</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Qanelas:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="/styles/index.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
+    <link rel="stylesheet" href="/styles/user-menu.css" />
+    <script src="/js/cart.js" defer></script>
+    <script src="/js/sort.js" defer></script>
+    <script src="/js/user-menu.js" defer></script>
+</head>
+</html>

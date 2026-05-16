@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{fragments/head :: head('Регистрация - Rukonpin Store')}">
+</head>
+<body>
+<div class="main-container">
+    <div class="rectangle">
+        <!-- Simplified Header for Auth Pages -->
+        <header class="auth-header">
+            <div class="logo-wrapper">
+                <div class="logo">R</div>
+                <span class="rukonpin">Rukonpin</span>
+            </div>
+
+            <!-- Auth Toggle Tabs -->
+            <div class="auth-tabs">
+                <a href="/register" class="auth-tab active">Регистрация</a>
+                <a href="/login" class="auth-tab">Войти</a>
+            </div>
+
+            <a href="/products" class="return-link">Вернуться на главную</a>
+        </header>
+
+        <div class="divider-line-top"></div>
+
+        <!-- Registration Form -->
+        <section class="auth-section">
+            <h1 class="auth-title">Создайте аккаунт на<br>Rukonpin Store</h1>
+
+            <form class="auth-form" id="registerForm">
+                <!-- Username Field -->
+                <div class="form-group">
+                    <label for="username" class="form-label">Ваше имя</label>
+                    <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-input"
+                            placeholder="Введите ваше имя"
+                            required>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Почта</label>
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="Введите вашу почту"
+                            required>
+                </div>
+
+                <!-- Password Fields Row -->
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                required>
+                    </div>
+
+                    <div class="form-group form-group-half">
+                        <label for="confirmPassword" class="form-label">Подтвердите пароль</label>
+                        <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                class="form-input"
+                                required>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="auth-submit-btn">Создать аккаунт</button>
+
+                <!-- Terms Notice -->
+                <p class="auth-terms">
+                    После регистрации вы соглашаетесь с
+                    <a href="/terms" class="terms-link">Условиями использования</a>
+                    и
+                    <a href="/privacy" class="terms-link">Политикой конфиденциальности</a>
+                </p>
+            </form>
+        </section>
+
+    </div>
+</div>
+
+<script src="/js/auth.js" defer></script>
+</body>
+</html>

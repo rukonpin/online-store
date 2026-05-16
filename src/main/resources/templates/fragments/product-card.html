@@ -1,0 +1,23 @@
+<th:block th:fragment="product-cards(productsList)">
+    <div th:each="product : ${productsList}" class="product-card">
+        <div class="product-image-container">
+            <div class="overlay"></div>
+            <a th:href="@{/products/{id}(id=${product.uuid})}">
+                <img class="product-image"
+                     th:src="@{${product.imageUrl}}"
+                     th:alt="${product.name}">
+            </a>
+            <button class="add-to-cart-btn-overlay"
+                    th:data-product-uuid="${product.uuid}"
+                    th:data-product-name="${product.name}">
+                В корзину
+            </button>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name" th:text="${product.name}">Название товара</h3>
+            <p class="product-price">
+                <span th:text="${#numbers.formatDecimal(product.price, 0, 'WHITESPACE', 0, 'POINT')}">50 000</span> ₽
+            </p>
+        </div>
+    </div>
+</th:block>

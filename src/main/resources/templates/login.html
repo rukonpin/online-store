@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{fragments/head :: head('Вход - Rukonpin Store')}">
+</head>
+<body>
+<div class="main-container">
+    <div class="rectangle">
+        <!-- Simplified Header for Auth Pages -->
+        <header class="auth-header">
+            <div class="logo-wrapper">
+                <div class="logo">R</div>
+                <span class="rukonpin">Rukonpin</span>
+            </div>
+
+            <!-- Auth Toggle Tabs -->
+            <div class="auth-tabs">
+                <a href="/register" class="auth-tab">Регистрация</a>
+                <a href="/login" class="auth-tab active">Войти</a>
+            </div>
+
+            <a href="/products" class="return-link">Вернуться на главную</a>
+        </header>
+
+        <div class="divider-line-top"></div>
+
+        <!-- Login Form -->
+        <section class="auth-section">
+            <h1 class="auth-title">Войдите в ваш<br>аккаунт</h1>
+
+            <form class="auth-form" id="loginForm">
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Почта</label>
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="Введите вашу почту"
+                            required>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="Введите ваш пароль"
+                            required>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="auth-submit-btn">Войти</button>
+
+                <!-- Additional Links -->
+                <p class="auth-additional-links">
+                    <a href="/register" class="auth-link">Нет аккаунта? Зарегистрируйтесь</a>
+                </p>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script src="/js/auth.js" defer></script>
+</body>
+</html>

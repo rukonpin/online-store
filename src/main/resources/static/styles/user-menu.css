@@ -1,0 +1,154 @@
+/* ========================================
+   USER MENU & AVATAR STYLES
+   Add this to the end of your index.css file
+   ======================================== */
+
+/* User Menu Wrapper */
+.user-menu-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Orders Link */
+.orders-link {
+    color: #799096;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.orders-link:hover {
+    color: #385962;
+}
+
+/* User Avatar Dropdown Container */
+.user-avatar-dropdown {
+    position: relative;
+}
+
+/* User Avatar Circle */
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    background: #F5F6F7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.user-avatar span {
+    color: #385962;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 500;
+    user-select: none;
+}
+
+.user-avatar:hover {
+    background: #F0F2F4;
+}
+
+/* Dropdown Menu */
+.user-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: #ffffff;
+    border: 1px solid #f6f6f6;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(146, 147, 152, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    padding: 8px;
+}
+
+.user-avatar-dropdown:hover .user-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown Header */
+.user-dropdown-header {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+}
+
+.user-dropdown-name {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 600;
+    color: #222222;
+    display: block;
+}
+
+/* Dropdown Divider */
+.user-dropdown-divider {
+    height: 1px;
+    background: #f6f6f6;
+    margin: 4px 0;
+}
+
+/* Dropdown Items */
+.user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 500;
+    color: #799096;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.user-dropdown-item:hover {
+    background: #f5f6f7;
+    color: #385962;
+}
+
+.user-dropdown-item svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+}
+
+/* Logout Button Specific Styles */
+.logout-btn {
+    color: #DC2626;
+}
+
+.logout-btn:hover {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-dropdown-menu {
+        right: -10px;
+        min-width: 180px;
+    }
+
+    .orders-link {
+        display: none; /* Hide on mobile, accessible via dropdown */
+    }
+}

@@ -1,0 +1,57 @@
+<header class="flex-row" th:fragment="header">
+    <div class="logo-wrapper">
+        <div class="logo">R</div>
+        <span class="rukonpin">Rukonpin</span>
+    </div>
+
+    <form class="frame" action="/products" method="get">
+        <div class="search-magnifying-glass"></div>
+        <div class="frame-2"><span class="showcase">showcase</span></div>
+        <input type="text" name="query" class="text-search"
+               th:value="${query}"
+               placeholder="Например macbook...">
+    </form>
+
+    <div class="header-actions">
+        <!-- Not Logged In -->
+        <div th:if="${session.user_id == null}">
+            <a href="/register" class="login-register">Войти или зарегистрироваться</a>
+        </div>
+
+        <!-- Logged In -->
+        <div th:if="${session.user_id != null}" class="user-menu-wrapper">
+            <a href="/orders" class="orders-link">Заказы</a>
+
+            <div class="user-avatar-dropdown">
+                <!-- Avatar with first letter of username -->
+                <div class="user-avatar" th:attr="data-letter=${session.username != null ? #strings.substring(session.username, 0, 1).toUpperCase() : 'R'}">
+                    <span th:text="${session.username != null ? #strings.substring(session.username, 0, 1).toUpperCase() : 'R'}">R</span>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div class="user-dropdown-menu">
+                    <div class="user-dropdown-header">
+                        <span class="user-dropdown-name" th:text="${session.username ?: 'Пользователь'}">Пользователь</span>
+                    </div>
+                    <div class="user-dropdown-divider"></div>
+                    <button class="user-dropdown-item logout-btn" onclick="handleLogout(event)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 14H3C2.45 14 2 13.55 2 13V3C2 2.45 2.45 2 3 2H6C6.55 2 7 1.55 7 1C7 0.45 6.55 0 6 0H3C1.35 0 0 1.35 0 3V13C0 14.65 1.35 16 3 16H6C6.55 16 7 15.55 7 15C7 14.45 6.55 14 6 14ZM15.71 7.29L12.71 4.29C12.32 3.9 11.69 3.9 11.3 4.29C10.91 4.68 10.91 5.31 11.3 5.7L12.59 7H6C5.45 7 5 7.45 5 8C5 8.55 5.45 9 6 9H12.59L11.3 10.29C10.91 10.68 10.91 11.31 11.3 11.7C11.69 12.09 12.32 12.09 12.71 11.7L15.71 8.7C16.1 8.31 16.1 7.68 15.71 7.29Z" fill="currentColor"/>
+                        </svg>
+                        Выйти
+                    </button>
+                </div>
+            </div>
+
+            <div class="divider">|</div>
+
+            <a href="/cart" class="handbag-wrapper">
+                <div class="handbag"></div>
+                <div class="ellipse" th:if="${session.cartCount != null and session.cartCount > 0}">
+                    <span class="count" th:text="${session.cartCount}">0</span>
+                </div>
+            </a>
+
+
+        </div>
+</header>
