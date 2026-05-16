@@ -1,9 +1,9 @@
 package com.online.store.controller.product.api;
 
 import com.online.store.dto.product.ProductDto;
-import com.online.store.exception.ProductNotFoundException;
+import com.online.store.exception.product.ProductNotFoundException;
 import com.online.store.mapper.product.ProductMapper;
-import com.online.store.model.Product;
+import com.online.store.model.product.Product;
 import com.online.store.service.product.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,11 +59,12 @@ class ProductRestControllerTest {
                 .price(BigDecimal.TEN)
                 .build();
 
-        testProductDto = new ProductDto();
-        testProductDto.setUuid(testUuid);
-        testProductDto.setName("Test Product");
-        testProductDto.setImageUrl("http://test.com/image.jpeg");
-        testProductDto.setPrice(BigDecimal.TEN);
+        testProductDto = ProductDto.builder()
+                .uuid(testUuid)
+                .name("Test Product")
+                .imageUrl("http://test.com/image.jpeg")
+                .price(BigDecimal.TEN)
+                .build();
     }
 
     @Test

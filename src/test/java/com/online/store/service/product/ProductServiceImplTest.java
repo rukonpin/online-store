@@ -1,8 +1,8 @@
 package com.online.store.service.product;
 
-import com.online.store.exception.ProductNotFoundException;
-import com.online.store.model.Product;
-import com.online.store.repository.ProductRepository;
+import com.online.store.exception.product.ProductNotFoundException;
+import com.online.store.model.product.Product;
+import com.online.store.repository.product.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
