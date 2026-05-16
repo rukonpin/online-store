@@ -6,6 +6,7 @@ import com.online.store.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ public class ProductViewController {
     @GetMapping
     public String catalog(
             @RequestParam(required = false) String query,
-            @PageableDefault Pageable pageable,
+            @PageableDefault(sort = "price", direction = Sort.Direction.ASC) Pageable pageable,
             Model model) {
 
         Page<ProductDto> products = productService.getAll(query, pageable)
