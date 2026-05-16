@@ -1,4 +1,4 @@
-package com.online.store.exception;
+package com.online.store.exception.product;
 
 import java.util.UUID;
 
