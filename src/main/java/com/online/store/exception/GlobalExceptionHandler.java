@@ -1,5 +1,6 @@
 package com.online.store.exception;
 
+import com.online.store.exception.cart.CartItemNotFoundException;
 import com.online.store.exception.product.ProductNotFoundException;
 import com.online.store.exception.user.AuthenticationUserException;
 import com.online.store.exception.user.UserExistsException;
@@ -71,5 +72,15 @@ public class GlobalExceptionHandler {
 
         return  ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
+    }
+
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerCartItemNotFound(CartItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(
+                        LocalDateTime.now(),
+                        HttpStatus.NOT_FOUND,
+                        e.getMessage()
+                ));
     }
 }

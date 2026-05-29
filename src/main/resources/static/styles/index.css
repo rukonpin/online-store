@@ -33,19 +33,17 @@ button {
     background: #ffffff;
 }
 
-/* Общий контейнер шапки */
 .flex-row {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Расталкивает элементы по краям */
+    justify-content: space-between;
     height: 60px;
     padding: 0 20px;
     background: #ffffff;
-    gap: 20px; /* Расстояние между группами элементов */
+    gap: 20px;
 }
 
-/* Группа Логотип + Название */
 .logo-wrapper {
     display: flex;
     align-items: center;
@@ -90,14 +88,13 @@ button {
     padding: 0 12px 0 12px;
 }
 
-/* Центр: Поиск */
 .frame {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    flex-grow: 1; /* Позволяет поиску занимать свободное место */
+    flex-grow: 1;
     width: 387px;
     z-index: 10;
     height: 40px;
@@ -156,7 +153,6 @@ button {
     z-index: 79;
 }
 
-/* Правая часть: Логин и Корзина */
 .header-actions {
     display: flex;
     align-items: center;
@@ -184,9 +180,8 @@ button {
     white-space: nowrap;
 }
 
-/* Корзина */
 .handbag-wrapper {
-    position: relative; /* Чтобы счетчик позиционировался относительно иконки */
+    position: relative;
     width: 24px;
     height: 24px;
     background: url('../icons/Handbag.svg') no-repeat center / contain;
@@ -209,8 +204,8 @@ button {
     right: -4px;
     width: 14px;
     height: 14px;
-    background: #385962; /* Красный цвет для внимания */
-    border-radius: 50%;
+    background: #385962;
+    border-radius: 40%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -223,10 +218,9 @@ button {
     font-weight: 700;
 }
 
-/* Общий контейнер секции */
 .catalog-section {
-    max-width: 1200px; /* Согласуется с твоей шапкой */
-    margin: 35px auto 20px;
+    max-width: 1200px;
+    margin-top: 35px;
     padding: 0 20px;
 }
 
@@ -241,16 +235,15 @@ button {
 .divider-line {
     width: 100%;
     height: 1px;
-    background: #F6F6F6; /* Лучше использовать чистый цвет вместо картинки-линии */
-    margin-bottom: 20px;
+    background: #F6F6F6;
 }
 
-/* Панель инструментов (сортировка + количество) */
 .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 40px;
+    padding-top: 20px;
 }
 
 .toolbar-left, .toolbar-right {
@@ -259,7 +252,6 @@ button {
     gap: 15px;
 }
 
-/* Стили меток */
 .label, .total-count {
     color: #799096;
     font-family: Qanelas, var(--default-font-family);
@@ -271,7 +263,6 @@ button {
     color: #efefef;
 }
 
-/* Выпадающий список сортировки */
 .sort-dropdown {
     position: relative;
     display: flex;
@@ -310,7 +301,6 @@ button {
     transition: transform 0.3s ease;
 }
 
-/* Выпадающее меню */
 .sort-dropdown-menu {
     position: absolute;
     top: calc(100% + 5px);
@@ -326,7 +316,7 @@ button {
     transition: all 0.3s ease;
     z-index: 100;
     overflow: hidden;
-    padding: 4px; /* Внутренний отступ для меню */
+    padding: 4px;
 }
 
 .sort-dropdown.open .sort-dropdown-menu {
@@ -345,7 +335,7 @@ button {
     text-decoration: none;
     transition: all 0.2s ease;
     white-space: nowrap;
-    border-radius: 8px; /* Всегда скруглённые углы */
+    border-radius: 8px;
 }
 
 .sort-option:hover {
@@ -358,7 +348,6 @@ button {
     background: #f5f6f7;
 }
 
-/* Выбор количества товаров (10, 20, 50) */
 .page-size-selector {
     display: flex;
     background: #ffffff;
@@ -388,20 +377,16 @@ button {
     background: #fafafa;
 }
 
-/* Сетка */
 .products-grid {
     display: grid;
-    /* Создает колонки шириной минимум 280px.
-       Если места много — влезет 4 в ряд, если мало — перестроятся сами */
     grid-template-columns: repeat(auto-fill, minmax(237px, 1fr));
     gap: 20px 30px;
     padding: 20px;
     width: 100%;
-    max-width: 1200px; /* Ограничиваем ширину каталога, чтобы не растягивался на весь экран */
-    margin: 0 auto;    /* Центрируем сетку */
+    max-width: 1200px;
+    margin: 25px auto;
 }
 
-/* Карточка товара */
 .product-card {
     padding: 15px;
     display: flex;
@@ -413,9 +398,8 @@ button {
     transform: translateY(-5px);
 }
 
-/* Контейнер для картинки (чтобы все были одного размера) */
 .product-image-container {
-    position: relative; /* Чтобы кнопка не улетала за пределы */
+    position: relative;
     width: 100%;
     display: flex;
     align-items: center;
@@ -425,7 +409,6 @@ button {
     margin-bottom: 10px;
 }
 
-/* Градиентный слой */
 .overlay {
     position: absolute;
     top: 0;
@@ -433,7 +416,7 @@ button {
     width: 100%;
     height: 100%;
     background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255,255,255,1) 90%);
-    opacity: 0; /* Скрыт по умолчанию */
+    opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 1;
 }
@@ -441,7 +424,7 @@ button {
 .product-image {
     max-width: 239px;
     max-height: 149px;
-    object-fit: contain; /* Картинка впишется в рамки без искажений */
+    object-fit: contain;
 }
 
 .product-name {
@@ -452,7 +435,7 @@ button {
     font-weight: 500;
     font-family: Qanelas, var(--default-font-family);
     margin-bottom: 10px;
-    height: 40px; /* Фиксируем высоту заголовка, чтобы кнопки были в ряд */
+    height: 40px;
     text-align: center;
     overflow: hidden;
 }
@@ -469,12 +452,11 @@ button {
     font-family: Qanelas, var(--default-font-family);
 }
 
-/* Кнопка поверх картинки */
 .add-to-cart-btn-overlay {
     position: absolute;
     bottom: 14px;
     left: 50%;
-    transform: translateX(-50%) translateY(10px); /* Немного смещена вниз для эффекта всплытия */
+    transform: translateX(-50%) translateY(10px);
     width: 160px;
     padding: 12px;
     background: #385962;
@@ -484,28 +466,26 @@ button {
     border-radius: 12px;
     cursor: pointer;
     font-weight: 500;
-    opacity: 0; /* Скрыта */
+    opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
     z-index: 2;
 }
 
-/* ЭФФЕКТ ПРИ НАВЕДЕНИИ */
 .product-card:hover .overlay {
-    opacity: 1; /* Показываем градиент */
+    opacity: 1;
 }
 
 .product-card:hover .add-to-cart-btn-overlay {
-    opacity: 1; /* Показываем кнопку */
+    opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0); /* Всплывает на место */
+    transform: translateX(-50%) translateY(0);
 }
 
 .add-to-cart-btn-overlay:hover {
     box-shadow: 0 4px 6px rgb(56 89 98 / 24%);
 }
 
-/* Убираем старые отступы у инфо, так как кнопки там больше нет */
 .product-info {
     text-align: center;
 }
@@ -542,4 +522,9 @@ button {
     text-align: left;
     white-space: nowrap;
     z-index: 6;
+    padding-left: 5px;
+}
+
+.footer-section {
+    padding: 0 20px;
 }

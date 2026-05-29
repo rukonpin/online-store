@@ -1,11 +1,9 @@
-// Dropdown сортировки
 document.addEventListener('DOMContentLoaded', function() {
     const sortDropdown = document.querySelector('.sort-dropdown');
 
     if (!sortDropdown) return;
 
     sortDropdown.addEventListener('click', function(e) {
-        // Если кликнули по ссылке внутри меню, не переключаем состояние
         if (e.target.closest('.sort-option')) return;
 
         e.stopPropagation();

@@ -1,14 +1,9 @@
-/**
- * Auth Form Handler (Registration & Login)
- */
-
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
 
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegisterSubmit);
 
-        // Real-time password match validation
         const password = document.getElementById('password');
         const confirmPassword = document.getElementById('confirmPassword');
 
@@ -20,9 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/**
- * Handle registration form submission
- */
 async function handleRegisterSubmit(event) {
     event.preventDefault();
 
@@ -36,17 +28,14 @@ async function handleRegisterSubmit(event) {
         confirmPassword: formData.get('confirmPassword')
     };
 
-    // Client-side validation
     const validationError = validateRegistrationData(data);
     if (validationError) {
         showMessage(validationError, 'error');
         return;
     }
 
-    // Clear previous messages
     clearMessages();
 
-    // Disable submit button
     const submitBtn = form.querySelector('.auth-submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
@@ -80,27 +69,20 @@ async function handleRegisterSubmit(event) {
     }
 }
 
-/**
- * Validate registration data
- */
 function validateRegistrationData(data) {
-    // Username validation
     if (!data.username || data.username.trim().length < 2) {
         return 'Имя должно содержать минимум 2 символа';
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(data.email)) {
         return 'Неверный формат email';
     }
 
-    // Password validation
     if (data.password.length < 6) {
         return 'Пароль должен содержать минимум 6 символов';
     }
 
-    // Password match validation
     if (data.password !== data.confirmPassword) {
         return 'Пароли не совпадают';
     }
@@ -108,9 +90,6 @@ function validateRegistrationData(data) {
     return null;
 }
 
-/**
- * Real-time password match validation
- */
 function validatePasswordMatch(passwordInput, confirmPasswordInput) {
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
@@ -129,9 +108,6 @@ function validatePasswordMatch(passwordInput, confirmPasswordInput) {
     }
 }
 
-/**
- * Show message to user
- */
 function showMessage(message, type = 'error') {
     clearMessages();
 
@@ -142,7 +118,6 @@ function showMessage(message, type = 'error') {
     const form = document.querySelector('.auth-form');
     form.insertBefore(messageDiv, form.firstChild);
 
-    // Auto-remove success messages after 5 seconds
     if (type === 'success') {
         setTimeout(() => {
             messageDiv.remove();
@@ -150,17 +125,11 @@ function showMessage(message, type = 'error') {
     }
 }
 
-/**
- * Clear all messages
- */
 function clearMessages() {
     const existingMessages = document.querySelectorAll('.form-message');
     existingMessages.forEach(msg => msg.remove());
 }
 
-/**
- * Login form handler
- */
 async function handleLoginSubmit(event) {
     event.preventDefault();
 
@@ -172,10 +141,8 @@ async function handleLoginSubmit(event) {
         password: formData.get('password')
     };
 
-    // Clear previous messages
     clearMessages();
 
-    // Disable submit button
     const submitBtn = form.querySelector('.auth-submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
@@ -209,7 +176,6 @@ async function handleLoginSubmit(event) {
     }
 }
 
-// Attach login handler if login form exists
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {

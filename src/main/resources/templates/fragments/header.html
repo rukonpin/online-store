@@ -13,22 +13,18 @@
     </form>
 
     <div class="header-actions">
-        <!-- Not Logged In -->
         <div th:if="${session.user_id == null}">
             <a href="/register" class="login-register">Войти или зарегистрироваться</a>
         </div>
 
-        <!-- Logged In -->
         <div th:if="${session.user_id != null}" class="user-menu-wrapper">
             <a href="/orders" class="orders-link">Заказы</a>
 
             <div class="user-avatar-dropdown">
-                <!-- Avatar with first letter of username -->
                 <div class="user-avatar" th:attr="data-letter=${session.username != null ? #strings.substring(session.username, 0, 1).toUpperCase() : 'R'}">
                     <span th:text="${session.username != null ? #strings.substring(session.username, 0, 1).toUpperCase() : 'R'}">R</span>
                 </div>
 
-                <!-- Dropdown Menu -->
                 <div class="user-dropdown-menu">
                     <div class="user-dropdown-header">
                         <span class="user-dropdown-name" th:text="${session.username ?: 'Пользователь'}">Пользователь</span>

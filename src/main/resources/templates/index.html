@@ -5,28 +5,23 @@
 <body>
 <div class="main-container">
     <div class="rectangle">
-        <!-- Header -->
         <div th:replace="~{fragments/header :: header}"></div>
 
-        <!-- Catalog Section -->
         <section class="catalog-section">
             <h1 class="catalog-title">Каталог</h1>
             <div class="divider-line"></div>
 
-            <!-- Toolbar -->
             <div th:replace="~{fragments/toolbar :: toolbar(${products}, ${query})}"></div>
         </section>
 
-        <!-- Products Grid -->
         <div class="products-grid">
-            <!-- Product Cards -->
             <th:block th:replace="~{fragments/product-card :: product-cards(${products.content})}"></th:block>
         </div>
 
-        <div class="divider-line"></div>
-
-        <!-- Footer -->
+        <section class="catalog-section">
+            <div class="divider-line"></div>
         <div th:replace="~{fragments/footer :: footer}"></div>
+        </section>
     </div>
 </div>
 </body>

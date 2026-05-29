@@ -2,7 +2,6 @@
    AUTH PAGES STYLES (Register/Login)
    ======================================== */
 
-/* Simplified Header for Auth Pages */
 .auth-header {
     display: flex;
     align-items: center;
@@ -16,7 +15,7 @@
 .divider-line-top {
     width: 96.5%;
     height: 1px;
-    background: #F6F6F6; /* Лучше использовать чистый цвет вместо картинки-линии */
+    background: #F6F6F6;
     margin: 0 auto 0;
 }
 
@@ -33,7 +32,6 @@
     color: #385962;
 }
 
-/* Auth Toggle Tabs */
 .auth-tabs {
     display: flex;
     gap: 6px;
@@ -64,7 +62,6 @@
     background: #F4F4F4;
 }
 
-/* Divider below tabs */
 .auth-tabs-divider {
     width: 300px;
     height: 1px;
@@ -72,7 +69,6 @@
     margin: 11px auto 0;
 }
 
-/* Auth Section Container */
 .auth-section {
     max-width: 300px;
     margin: 130px auto 0;
@@ -87,7 +83,6 @@
     margin: 0 0 26px 0;
 }
 
-/* Auth Form */
 .auth-form {
     display: flex;
     flex-direction: column;
@@ -133,7 +128,6 @@
     border-color: #E5E5E5;
 }
 
-/* Two-column password fields */
 .form-row {
     display: flex;
     gap: 12px;
@@ -145,7 +139,6 @@
     margin-bottom: 0;
 }
 
-/* Submit Button */
 .auth-submit-btn {
     width: 100%;
     height: 40px;
@@ -171,7 +164,6 @@
     transform: translateY(1px);
 }
 
-/* Terms Notice */
 .auth-terms {
     font-family: Qanelas, var(--default-font-family);
     font-size: 12px;
@@ -193,7 +185,6 @@
     color: #2d4751;
 }
 
-/* Error/Success Messages */
 .form-message {
     padding: 12px;
     font-family: Qanelas, var(--default-font-family);
@@ -215,7 +206,6 @@
     border: 1px solid #DCFCE7;
 }
 
-/* Input Validation States */
 .form-input.invalid {
     border-color: #DC2626;
 }
@@ -224,7 +214,6 @@
     border-color: #16A34A;
 }
 
-/* Additional Links (Login page) */
 .auth-additional-links {
     margin-top: 18px;
 }
@@ -243,7 +232,6 @@
     text-decoration: underline;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .auth-section {
         padding: 0 20px;
