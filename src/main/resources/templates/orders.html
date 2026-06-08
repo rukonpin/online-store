@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{fragments/head :: head('Заказы - Rukonpin Store')}"></head>
+<body>
+<div class="main-container">
+    <div class="rectangle orders-page-layout">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <section class="orders-section">
+            <h1 class="orders-title">Заказы</h1>
+            <div class="divider-line"></div>
+
+            <div th:if="${orders != null and !orders.isEmpty()}" class="orders-list">
+                <div th:each="order : ${orders}" class="order-card">
+                    <div class="order-card-header">
+                        <div class="order-card-header-left">
+                            <div class="order-number-row">
+                                <span class="order-number"
+                                      th:text="${#strings.toUpperCase(order.uuid.toString().substring(0, 13).replace('-', ''))}">
+                                    12DK24N-30MD024M
+                                </span>
+                                <span class="order-status-badge"
+                                      th:classappend="${order.status.name() == 'CONFIRMED' or order.status.name() == 'DELIVERED'} ? 'badge-confirmed' :
+                                                     (${order.status.name() == 'CANCELLED'} ? 'badge-cancelled' :
+                                                     (${order.status.name() == 'SHIPPED'} ? 'badge-shipped' : 'badge-pending'))"
+                                      th:text="${order.status.name() == 'PENDING'} ? 'Оплачен' :
+                                               (${order.status.name() == 'CONFIRMED'} ? 'Подтверждён' :
+                                               (${order.status.name() == 'SHIPPED'} ? 'Отправлен' :
+                                               (${order.status.name() == 'DELIVERED'} ? 'Доставлен' : 'Отменён')))">
+                                    Оплачен
+                                </span>
+                            </div>
+                            <span class="order-date"
+                                  th:text="${#temporals.format(order.createdAt, 'd MMMM, yyyy', new java.util.Locale('ru'))}">
+                                16 февраля, 2026
+                            </span>
+                        </div>
+                        <a th:href="@{/orders/{orderUuid}(orderUuid=${order.uuid})}" class="order-details-link">
+                            Подробнее
+                        </a>
+                    </div>
+
+                    <div class="order-card-body">
+                        <div class="order-items-preview">
+                            <div th:each="item : ${order.items}" class="order-item-row">
+                                <div class="order-item-img-wrap">
+                                    <img class="order-item-img"
+                                         th:src="@{${item.imageUrl}}"
+                                         th:alt="${item.productName}">
+                                </div>
+                                <div class="order-item-info">
+                                    <span class="order-item-name" th:text="${item.productName}">Название товара</span>
+                                    <div class="order-item-meta">
+                                        <span class="order-item-qty"
+                                              th:text="${item.quantity + ' шт'}">1 шт</span>
+                                        <span class="order-item-price"
+                                              th:text="${#numbers.formatDecimal(item.priceAtPurchase, 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">
+                                            0 ₽
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-card-summary">
+                            <span class="order-total-label">Стоимость всего заказа</span>
+                            <span class="order-total-price"
+                                  th:text="${#numbers.formatDecimal(order.getTotalPrice(), 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">
+                                0 ₽
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${orders == null or orders.isEmpty()}" class="orders-empty">
+                <svg class="orders-empty-icon" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="60" height="60" rx="8" stroke="#c8d0d6" stroke-width="3" fill="none"/>
+                    <path d="M25 30h30M25 40h20M25 50h15" stroke="#c8d0d6" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span class="orders-empty-title">У вас пока нет заказов</span>
+                <span class="orders-empty-subtitle">Самое время что-нибудь купить</span>
+                <a href="/products" class="orders-empty-btn">Перейти в каталог</a>
+            </div>
+        </section>
+
+        <div class="orders-page-spacer"></div>
+
+        <section class="catalog-section">
+            <div class="divider-line"></div>
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

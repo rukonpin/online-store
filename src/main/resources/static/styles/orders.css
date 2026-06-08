@@ -1,0 +1,504 @@
+.orders-page-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.orders-page-spacer {
+    flex: 1;
+}
+
+.orders-section,
+.order-detail-section {
+    padding: 0 20px;
+}
+
+.orders-title {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 62px;
+    font-weight: 600;
+    color: #385962;
+    margin: 35px 0 25px 0;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0;
+}
+
+.order-card {
+    padding: 30px 0;
+    border-bottom: 1px solid #F6F6F6;
+}
+
+.order-card:last-child {
+    border-bottom: none;
+}
+
+.order-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.order-card-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-number-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-number {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 18px;
+    font-weight: 600;
+    color: #222222;
+    letter-spacing: 0.02em;
+}
+
+.order-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 7px;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge-pending {
+    background: #E1F6E4;
+    color: #14B62D;
+}
+
+.badge-confirmed {
+    background: #EFF6FF;
+    color: #2563EB;
+}
+
+.badge-shipped {
+    background: #FFF7ED;
+    color: #EA580C;
+}
+
+.badge-cancelled {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.order-date {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 12px;
+    font-weight: 400;
+    color: #799096;
+}
+
+.order-details-link {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 600;
+    color: #222222;
+    text-decoration: none;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    padding: 4px 11px;
+    background: #ffffff;
+    border: 1px solid #f6f6f6;
+    border-radius: 10px;
+    box-shadow: 0 1px 2.3px rgba(146, 147, 152, 0.11);
+    cursor: pointer;
+}
+
+.order-details-link:hover {
+    border-color: #e0e0e0;
+    text-decoration: none;
+}
+
+.order-card-body {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+}
+
+.order-items-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.order-item-img-wrap {
+    width: 77px;
+    height: 77px;
+    border: 1px solid #F6F6F6;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 12px;
+}
+
+.order-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.order-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.order-item-name {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 400;
+    color: #222222;
+    line-height: 1.4;
+}
+
+.order-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-item-qty {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 600;
+    color: #222222;
+}
+
+.order-item-price {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 18px;
+    font-weight: 600;
+    color: #222222;
+}
+
+.order-card-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.order-total-label {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 12px;
+    font-weight: 400;
+    color: #222222;
+    white-space: nowrap;
+}
+
+.order-total-price {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 24px;
+    font-weight: 600;
+    color: #222222;
+    white-space: nowrap;
+}
+
+.orders-empty {
+    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.orders-empty-icon {
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.orders-empty-title {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e2d35;
+}
+
+.orders-empty-subtitle {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 15px;
+    font-weight: 400;
+    color: #8a9ba8;
+    margin-bottom: 8px;
+}
+
+.orders-empty-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 14px 40px;
+    background: #385962;
+    color: #fff;
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.orders-empty-btn:hover {
+    box-shadow: 0 4px 6px rgb(56 89 98 / 24%);
+    background: #406974;
+}
+
+.orders-empty-btn:active {
+    transform: scale(0.98);
+}
+
+.order-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0 16px;
+}
+
+.breadcrumb-link {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 9px;
+    font-weight: 400;
+    color: #799096;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+    color: #385962;
+}
+
+.breadcrumb-sep {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 9px;
+    color: #799096;
+}
+
+.breadcrumb-current {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 9px;
+    font-weight: 400;
+    color: #799096;
+}
+
+.order-detail-title {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 24px;
+    font-weight: 600;
+    color: #222222;
+    margin: 24px 0 30px 0;
+    letter-spacing: 0.02em;
+}
+
+.order-detail-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 60px;
+    align-items: start;
+    padding-bottom: 40px;
+}
+
+.order-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.order-info-heading {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    color: #222222;
+    margin: 0 0 16px 0;
+    letter-spacing: 0.05em;
+}
+
+.order-info-card {
+    background: #ffffff;
+    border: 1px solid #f6f6f6;
+    border-radius: 12px;
+    box-shadow: 0 45px 0 0 #f5f6f7;
+    padding: 0 20px;
+    margin-bottom: 8px;
+}
+
+.order-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 17px 0;
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.order-info-row--last {
+    border-bottom: none;
+}
+
+.order-info-delivery {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    background: #f6f8fa;
+    border-radius: 10px;
+    margin-top: 4px;
+}
+
+.order-info-row--delivery {
+    margin-top: 8px;
+}
+
+.order-info-label {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 400;
+    color: #929398;
+}
+
+.order-info-value {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 14px;
+    font-weight: 600;
+    color: #385962;
+    text-align: right;
+}
+
+.order-info-total {
+    color: #385962;
+}
+
+.order-status-text.status-pending   { color: #14B62D; }
+.order-status-text.status-confirmed { color: #2563EB; }
+.order-status-text.status-shipped   { color: #EA580C; }
+.order-status-text.status-cancelled { color: #DC2626; }
+
+.order-items-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.order-detail-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 14px;
+    border-bottom: none;
+}
+
+.order-detail-item:last-child {
+    border-bottom: none;
+}
+
+.order-detail-img-wrap {
+    width: 77px;
+    height: 77px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid #F6F6F6;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.order-detail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.order-detail-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-detail-item-name {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 400;
+    color: #222222;
+    line-height: 1.4;
+}
+
+.order-detail-item-qty {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 600;
+    color: #222222;
+}
+
+.order-detail-item-price {
+    font-family: Qanelas, var(--default-font-family);
+    font-size: 18px;
+    font-weight: 600;
+    color: #222222;
+    white-space: nowrap;
+    padding-top: 2px;
+}
+
+
+@media (max-width: 900px) {
+    .order-detail-body {
+        display: grid;
+        grid-template-columns: 390px 1fr;
+        gap: 60px;
+        align-items: start;
+        padding-bottom: 40px;
+        margin-top: 16px;
+    }
+
+    .order-card-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .order-card-summary {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .orders-title {
+        font-size: 40px;
+    }
+
+    .order-detail-title {
+        font-size: 22px;
+        margin-top: 21px;
+    }
+
+    .order-total-price {
+        font-size: 20px;
+    }
+
+    .order-detail-item {
+        grid-template-columns: 60px 1fr auto;
+        gap: 14px;
+    }
+}

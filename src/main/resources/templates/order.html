@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{fragments/head :: head('Заказ - Rukonpin Store')}"></head>
+<body>
+<div class="main-container">
+    <div class="rectangle orders-page-layout">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <section class="order-detail-section">
+
+            <nav class="order-breadcrumb">
+                <a href="/orders" class="breadcrumb-link">Заказы</a>
+                <span class="breadcrumb-sep">/</span>
+                <span class="breadcrumb-current"
+                      th:text="${#strings.toLowerCase(#strings.toUpperCase(order.uuid.toString().substring(0, 13).replace('-', '')))}">
+                    12dk24n-30md024m
+                </span>
+            </nav>
+
+            <div class="divider-line"></div>
+
+            <h1 class="order-detail-title"
+                th:text="${#strings.toUpperCase(order.uuid.toString().substring(0, 13).replace('-', ''))}">
+                12DK24N-30MD024M
+            </h1>
+
+            <div class="order-detail-body">
+                <div class="order-info-block">
+                    <h2 class="order-info-heading">Информация о заказе</h2>
+
+                    <div class="order-info-card">
+                        <div class="order-info-row">
+                            <span class="order-info-label">Статус</span>
+                            <span class="order-info-value order-status-text"
+                                  th:classappend="${order.status.name() == 'CONFIRMED' or order.status.name() == 'DELIVERED'} ? 'status-confirmed' :
+                                     (${order.status.name() == 'CANCELLED'} ? 'status-cancelled' :
+                                     (${order.status.name() == 'SHIPPED'} ? 'status-shipped' : 'status-pending'))"
+                                  th:text="${order.status.name() == 'PENDING'} ? 'Оплачен' :
+                               (${order.status.name() == 'CONFIRMED'} ? 'Подтверждён' :
+                               (${order.status.name() == 'SHIPPED'} ? 'Отправлен' :
+                               (${order.status.name() == 'DELIVERED'} ? 'Доставлен' : 'Отменён')))">
+                    Оплачен
+                </span>
+                        </div>
+                        <div class="order-info-row">
+                            <span class="order-info-label">Дата создания</span>
+                            <span class="order-info-value"
+                                  th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">
+                    16.01.2026 20:00
+                </span>
+                        </div>
+                        <div class="order-info-row order-info-row--last">
+                            <span class="order-info-label">Сумма</span>
+                            <span class="order-info-value order-info-total"
+                                  th:text="${#numbers.formatDecimal(order.getTotalPrice(), 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">
+                    0 ₽
+                </span>
+                        </div>
+                    </div>
+
+                    <div class="order-info-delivery">
+                        <span class="order-info-label">Доставка</span>
+                        <span class="order-info-value">Бесплатно</span>
+                    </div>
+                </div>
+
+                <div class="order-items-block">
+                    <h2 class="order-info-heading">Состав заказа</h2>
+
+                    <div th:each="item : ${order.items}" class="order-detail-item">
+                        <div class="order-detail-img-wrap">
+                            <img class="order-detail-img"
+                                 th:src="@{${item.imageUrl}}"
+                                 th:alt="${item.productName}">
+                        </div>
+                        <div class="order-detail-item-info">
+                            <span class="order-detail-item-name" th:text="${item.productName}">Название товара</span>
+                            <span class="order-detail-item-qty"
+                                  th:text="${item.quantity + ' шт'}">1 шт</span>
+                        </div>
+                        <span class="order-detail-item-price"
+                              th:text="${#numbers.formatDecimal(item.priceAtPurchase, 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">
+                0 ₽
+            </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="orders-page-spacer"></div>
+
+        <section class="catalog-section">
+            <div class="divider-line"></div>
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head th:replace="~{fragments/head :: head(${product.name + ' - Rukonpin Store'})}"></head>
+<body>
+<div class="main-container">
+    <div class="rectangle">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <section class="product-page-section">
+
+            <div class="product-page-gallery">
+                <div class="product-page-img-wrap">
+                    <img class="product-page-img"
+                         th:src="@{${product.imageUrl}}"
+                         th:alt="${product.name}">
+                </div>
+            </div>
+
+            <div class="product-page-info">
+
+                <nav class="product-breadcrumb">
+                    <a href="/products" class="product-breadcrumb-link">Каталог</a>
+                    <span class="product-breadcrumb-sep">/</span>
+                    <span class="product-breadcrumb-current" th:text="${product.name}">Название товара</span>
+                </nav>
+
+                <div class="product-page-divider"></div>
+
+                <h1 class="product-page-title" th:text="${product.name}">Название товара</h1>
+
+                <p class="product-page-description"
+                   th:if="${product.description != null}"
+                   th:text="${product.description}">
+                    Описание товара
+                </p>
+
+                <span class="product-page-price"
+                      th:text="${#numbers.formatDecimal(product.price, 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">
+                    0 ₽
+                </span>
+
+                <button class="product-page-add-btn"
+                        th:data-product-uuid="${product.uuid}"
+                        id="addToCartBtn"
+                        onclick="handleProductPageAddToCart(this)">
+                    Добавить в корзину
+                </button>
+
+                <div class="product-page-pickup">
+                    <span class="product-page-pickup-label">Забрать в магазине</span>
+                    <span class="product-page-pickup-value">Бесплатно</span>
+                </div>
+
+                <div class="product-tabs">
+                    <button class="product-tab active" data-tab="description">Описание</button>
+                    <button class="product-tab" data-tab="specs">Характеристики</button>
+                    <button class="product-tab" data-tab="reviews">Отзывы</button>
+                </div>
+                <div class="product-tabs-divider"></div>
+
+                <div class="product-tab-content" id="tab-description">
+                    <p class="product-tab-text">
+                        Описание отсутствует
+                    </p>
+                </div>
+
+                <div class="product-tab-content hidden" id="tab-specs">
+                    <p class="product-tab-text">Характеристики не указаны</p>
+                </div>
+
+                <div class="product-tab-content hidden" id="tab-reviews">
+                    <p class="product-tab-text">Отзывов пока нет</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="catalog-section" style="margin-top: auto;">
+            <div class="divider-line"></div>
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
