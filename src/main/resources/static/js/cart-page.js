@@ -64,6 +64,28 @@ async function handleClearCart() {
     }
 }
 
-function handleCheckout() {
-    window.location.href = '/checkout';
+async function handleCheckout() {
+    try {
+        const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+
+        if (res.ok) {
+            const order = await res.json();
+            updateCartBadge(0);
+            window.location.href = '/orders';
+        } else {
+            const error = await res.json();
+            alert(error.message || 'Ошибка при оформлении заказа');
+        }
+    } catch (err) {
+        console.error('Checkout error:', err);
+        alert('Ошибка соединения с сервером');
+    }
 }

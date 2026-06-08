@@ -2,7 +2,8 @@
     <div th:each="product : ${productsList}" class="product-card">
         <div class="product-image-container">
             <div class="overlay"></div>
-            <a th:href="@{/products/{id}(id=${product.uuid})}">
+            <a class="product-card-link"
+               th:href="@{/products/{productUuid}(productUuid=${product.uuid})}">
                 <img class="product-image"
                      th:src="@{${product.imageUrl}}"
                      th:alt="${product.name}">
@@ -13,11 +14,14 @@
                 В корзину
             </button>
         </div>
-        <div class="product-info">
-            <h3 class="product-name" th:text="${product.name}">Название товара</h3>
-            <p class="product-price">
-                <span th:text="${#numbers.formatDecimal(product.price, 0, 'WHITESPACE', 0, 'POINT')}">50 000</span> ₽
-            </p>
-        </div>
+        <a class="product-info-link"
+           th:href="@{/products/{productUuid}(productUuid=${product.uuid})}">
+            <div class="product-info">
+                <h3 class="product-name" th:text="${product.name}">Название товара</h3>
+                <p class="product-price">
+                    <span th:text="${#numbers.formatDecimal(product.price, 0, 'WHITESPACE', 0, 'POINT')}">50 000</span> ₽
+                </p>
+            </div>
+        </a>
     </div>
 </th:block>

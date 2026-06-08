@@ -16,7 +16,7 @@ public interface CartMapper {
     CartDto toDto(Cart cart);
 
     @Mapping(source = "product.uuid", target = "productUuid")
-    @Mapping(source = "product.name", target = "productName") // Маппим имя из сущности Product в DTO
-    @Mapping(source = "product.imageUrl", target = "imageUrl") // Маппим картинку из Product в DTO
+    @Mapping(source = "product.name", target = "productName")
+    @Mapping(source = "product.imageUrl", target = "imageUrl")
     CartItemDto toDto(CartItem cartItem);
 }

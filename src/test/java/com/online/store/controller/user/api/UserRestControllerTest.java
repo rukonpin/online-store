@@ -71,7 +71,6 @@ class UserRestControllerTest {
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRegistrationDto)))
-                //.andDo(print())
                 .andExpect(status().isCreated());
     }
 
@@ -87,7 +86,6 @@ class UserRestControllerTest {
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRegistrationDto)))
-                //.andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message")
                         .value("User with email " + email + " already exists"));
@@ -117,7 +115,6 @@ class UserRestControllerTest {
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRegistrationDto)))
-                //.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Неверный формат email"));
     }
@@ -132,7 +129,6 @@ class UserRestControllerTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testLoginDto)))
-                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(request().sessionAttribute("user_id", testUser.getUuid()));
     }
@@ -147,7 +143,6 @@ class UserRestControllerTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testLoginDto)))
-                //.andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Invalid email or password"));
     }

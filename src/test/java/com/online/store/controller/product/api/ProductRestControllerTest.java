@@ -81,7 +81,6 @@ class ProductRestControllerTest {
 
         mockMvc.perform(get("/api/products")
                     .contentType(MediaType.APPLICATION_JSON))
-                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content", hasSize(1)))
@@ -105,7 +104,6 @@ class ProductRestControllerTest {
         mockMvc.perform(get("/api/products")
                         .param("query", searchQuery)
                         .contentType(MediaType.APPLICATION_JSON))
-                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Test Product"));
     }
@@ -129,7 +127,6 @@ class ProductRestControllerTest {
                         .param("page", "0")
                         .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
-                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.pageable.pageSize").value(10))
@@ -150,7 +147,6 @@ class ProductRestControllerTest {
                 .thenReturn(testProductDto);
 
         mockMvc.perform(get("/api/products/{uuid}", testUuid.toString()))
-                //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid").value(testUuid.toString()))
                 .andExpect(jsonPath("$.name").value("Test Product"));
@@ -165,7 +161,6 @@ class ProductRestControllerTest {
                 .thenThrow(new ProductNotFoundException(uuid));
 
         mockMvc.perform(get("/api/products/{uuid}", uuid.toString()))
-                //.andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Product with this " + uuid + " not found"));
     }

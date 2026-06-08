@@ -51,7 +51,7 @@ class CartRestControllerTest {
     @Test
     @DisplayName("GET /api/cart - should return cart when user is authenticated")
     void getCart_WhenAuthorized_ReturnsCart() throws Exception {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         User mockUser = User.builder().uuid(userUuid).build();
         Cart mockCart = Cart.builder().user(mockUser).build();
@@ -67,11 +67,10 @@ class CartRestControllerTest {
         when(cartMapper.toDto(mockCart))
                 .thenReturn(mockCartDto);
 
-        // When & Then
+
         mockMvc.perform(get("/api/cart")
                         .sessionAttr("user_id", userUuid)
                         .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userUuid").value(userUuid.toString()))
                 .andExpect(jsonPath("$.items", hasSize(0)));
@@ -136,10 +135,9 @@ class CartRestControllerTest {
                 .thenReturn(mockCartDto);
 
         mockMvc.perform(post("/api/cart/items")
-                .sessionAttr("user_id", userUuid)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(itemRequestDto)))
-//                .andDo(print())
+                    .sessionAttr("user_id", userUuid)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid").value(cartUuid.toString()))
                 .andExpect(jsonPath("$.userUuid").value(userUuid.toString()))
@@ -166,7 +164,6 @@ class CartRestControllerTest {
                         .sessionAttr("user_id", userUuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
-//                .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(
                         "Product with this " + productUuid + " not found"));
@@ -223,7 +220,6 @@ class CartRestControllerTest {
                         .sessionAttr("user_id", userUuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(quantity)))
-//                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].quantity").value(quantity.getQuantity()));
 
@@ -277,7 +273,6 @@ class CartRestControllerTest {
         mockMvc.perform(delete("/api/cart/items/{itemUuid}", itemUuid.toString())
                         .sessionAttr("user_id", userUuid)
                         .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uuid").value(mockCartDto.getUuid().toString()))
                 .andExpect(jsonPath("$.items", hasSize(0)));
@@ -295,7 +290,6 @@ class CartRestControllerTest {
         mockMvc.perform(delete("/api/cart/items/{itemUuid}", itemUuid.toString())
                         .sessionAttr("user_id", userUuid)
                         .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(
                         "Could not find item with uuid " + itemUuid));

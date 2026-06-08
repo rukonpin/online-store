@@ -24,8 +24,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-// В последующих тестах будет отсутствовать setUp(),
-// чтобы проверяющему было удобней изучать без скролла наверх к методу
 @ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
 
@@ -41,7 +39,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should return cart when exists user")
     void getOrCreateCart_WhenUserExists_ReturnsExistingCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         User mockUser = User.builder().uuid(userUuid).build();
         Cart mockCart = Cart.builder().user(mockUser).build();
@@ -49,10 +47,8 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When
         Cart result = cartService.getOrCreateCart(userUuid);
 
-        // Then
         assertNotNull(result);
         assertEquals(mockCart, result);
         verify(cartRepository, never()).save(any(Cart.class));
@@ -61,7 +57,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should return new cart when the user does not yet have a cart")
     void getOrCreateCart_WhenUserDoesNotHaveCart_ReturnsNewCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
 
         when(cartRepository.findByUserUuid(userUuid))
@@ -70,10 +66,8 @@ class CartServiceImplTest {
                 .thenAnswer(i -> i.getArgument(0));
 
 
-        // When
         Cart result = cartService.getOrCreateCart(userUuid);
 
-        // Then
         assertNotNull(result);
         assertEquals(userUuid, result.getUser().getUuid());
         assertTrue(result.getItems().isEmpty());
@@ -83,7 +77,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should add item when empty cart")
     void addItem_WhenEmptyCart_AddNewItemToCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID productUuid = UUID.randomUUID();
         Integer expectedQuantity = 1;
@@ -105,10 +99,8 @@ class CartServiceImplTest {
         when(productService.getById(mockCartItem.getProductUuid()))
                 .thenReturn(mockProduct);
 
-        // When
         Cart result = cartService.addItem(userUuid, mockCartItem);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(productUuid, result.getItems().getFirst().getProduct().getUuid());
@@ -119,7 +111,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should add item when there are already items in the cart")
     void addItem_WhenCartNotEmpty_AddNewItemToCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID existingProductUuid = UUID.randomUUID();
         UUID newProductUuid = UUID.randomUUID();
@@ -152,10 +144,8 @@ class CartServiceImplTest {
         when(productService.getById(mockCartItemDto.getProductUuid()))
                 .thenReturn(mockProduct);
 
-        // When
         Cart result = cartService.addItem(userUuid, mockCartItemDto);
 
-        // Then
         assertNotNull(result);
         assertEquals(2, result.getItems().size());
 
@@ -172,7 +162,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should update item when item found by item uuid")
     void updateItem_WhenItemUuidExists_ReturnCorrectQuantity() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID itemUuid = UUID.randomUUID();
         UUID existingProductUuid = UUID.randomUUID();
@@ -202,10 +192,8 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When
         Cart result = cartService.updateItem(userUuid, itemUuid, expectedQuantity);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
 
@@ -222,7 +210,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should throw CartItemNotFoundException when item not found")
     void updateItem_WhenItemNotFound_ThrowCartItemNotFoundException() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID itemUuid = UUID.randomUUID();
 
@@ -239,7 +227,6 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When & Then
         assertThrows(CartItemNotFoundException.class,
                 () -> cartService.updateItem(userUuid, itemUuid, expectedQuantity));
     }
@@ -247,7 +234,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should throw CartItemNotFoundException when item not found")
     void removeItem_WhenItemNotFound_ThrowCartItemNotFoundException() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID itemUuid = UUID.randomUUID();
 
@@ -261,14 +248,13 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When & Then
         assertThrows(CartItemNotFoundException.class, () -> cartService.removeItem(userUuid, itemUuid));
     }
 
     @Test
     @DisplayName("Should remove item from cart and return updated cart when item found")
     void removeItem_WhenItemFound_RemovesItemAndReturnsUpdatedCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         UUID itemUuid = UUID.randomUUID();
 
@@ -290,10 +276,8 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When
         Cart result = cartService.removeItem(userUuid, itemUuid);
 
-        // Then
         assertNotNull(result);
         assertEquals(0, result.getItems().size());
         verify(cartRepository).findByUserUuid(userUuid);
@@ -302,7 +286,7 @@ class CartServiceImplTest {
     @Test
     @DisplayName("Should clean cart when cart not empty")
     void cleanCart_WhenCartNotEmpty_ReturnEmptyCart() {
-        // Given
+
         UUID userUuid = UUID.randomUUID();
         User mockUser = User.builder().uuid(userUuid).build();
 
@@ -320,10 +304,8 @@ class CartServiceImplTest {
         when(cartRepository.findByUserUuid(userUuid))
                 .thenReturn(Optional.of(mockCart));
 
-        // When
         Cart result = cartService.cleanCart(userUuid);
 
-        // Then
         assertNotNull(result);
         assertEquals(0, result.getItems().size());
         verify(cartRepository).findByUserUuid(userUuid);

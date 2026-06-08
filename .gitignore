@@ -1,28 +1,54 @@
-# Java
+# ===== Java =====
 *.class
+*.log
+*.ctxt
+.mtj.tmp/
 *.jar
 *.war
+*.nar
 *.ear
-target/
-*.log
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
 
-# Maven
-.mvn/
+# ===== Build =====
+target/
+build/
+out/
+
+# ===== Maven =====
+.mvn/wrapper/maven-wrapper.jar
 mvnw
 mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
 
-# IDE
+# ===== IDE =====
 .idea/
 *.iml
 .vscode/
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
+*.launch
 
-# OS
+# ===== Spring Boot =====
+application-local.yaml
+application-local.properties
+*.env
+
+# ===== OS =====
 .DS_Store
+.DS_Store?
 Thumbs.db
+ehthumbs.db
 
-# Environment
-.env
-.env.local
+# ===== Docker =====
+.docker/

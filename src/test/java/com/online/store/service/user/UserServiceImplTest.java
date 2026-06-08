@@ -63,16 +63,13 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Should successfully save new user registered")
     void register_WhenDataIsValid_SavesUser() {
-        // G
         when(userRepository.existsByEmail(mockUserDto.getEmail()))
                 .thenReturn(false);
         when(userMapper.toEntity(mockUserDto))
                 .thenReturn(mockUser);
 
-        // W
         userService.register(mockUserDto);
 
-        // T
         verify(userRepository).existsByEmail(mockUserDto.getEmail());
         verify(userMapper).toEntity(mockUserDto);
         verify(userRepository).save(mockUser);
@@ -100,7 +97,6 @@ class UserServiceImplTest {
         assertThrows(ValidationException.class,
                 () -> userService.register(mockUserDto));
 
-        // убедитится, что до репозитория дело не дошло
         verifyNoInteractions(userRepository);
     }
 

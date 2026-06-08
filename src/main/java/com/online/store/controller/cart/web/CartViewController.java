@@ -32,7 +32,6 @@ public class CartViewController {
         CartDto cart = cartMapper.toDto(cartService.getOrCreateCart(userUuid));
         model.addAttribute("cart", cart);
 
-        // Sync cart count in session
         session.setAttribute("cartCount", cart.getItems().size());
 
         return "cart";

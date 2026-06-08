@@ -10,5 +10,6 @@ public interface ProductMapper {
 
     // Entity -> DTO для списка
     @Mapping(source = "uuid", target = "uuid")
+    @Mapping(source = "description", target = "description")
     ProductDto toDto(Product product);
 }

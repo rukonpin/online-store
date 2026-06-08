@@ -1,9 +1,12 @@
 package com.online.store.exception;
 
+import com.online.store.exception.cart.CartIsEmptyException;
 import com.online.store.exception.cart.CartItemNotFoundException;
+import com.online.store.exception.order.OrderNotFoundException;
 import com.online.store.exception.product.ProductNotFoundException;
 import com.online.store.exception.user.AuthenticationUserException;
 import com.online.store.exception.user.UserExistsException;
+import com.online.store.exception.user.UserNotFoundException;
 import com.online.store.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +79,36 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CartItemNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlerCartItemNotFound(CartItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(
+                        LocalDateTime.now(),
+                        HttpStatus.NOT_FOUND,
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(CartIsEmptyException.class)
+    public ResponseEntity<ErrorResponse> handlerCartIsEmpty(CartIsEmptyException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST,
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerOrderNotFound(OrderNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(
+                        LocalDateTime.now(),
+                        HttpStatus.NOT_FOUND,
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerUserNotFound(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of(
                         LocalDateTime.now(),
