@@ -8,15 +8,11 @@
 заказов. Поддерживается 
 регистрация, вход и сессионная авторизация.
 
----
-
 ## Showcase
 
 > 📹 **Видео-демонстрация проекта:** _ссылка будет добавлена после записи_
 
 <!-- [![Showcase](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID) -->
-
----
 
 ## Стек технологий
 
@@ -30,14 +26,10 @@
 | Сборка            | Maven                                  |
 | Контейнеризация   | Docker, Docker Compose                 |
 
----
-
 ## Схема базы данных
 
 ![Схема БД](docs/db-schema.jpg)
 
-
----
 
 ## Структура проекта
 
@@ -69,8 +61,6 @@ src/
         └── service/         # Unit-тесты сервисов
 ```
 
----
-
 ## Запуск
 
 ### Требования
@@ -79,8 +69,6 @@ src/
 - Maven 3.9+
 - Docker и Docker Compose (для запуска в контейнере)
 - PostgreSQL 15 (для локального запуска без Docker)
-
----
 
 ### 1. Локально в IDE
 
@@ -105,8 +93,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 Приложение будет доступно по адресу: [http://localhost:8080/products](http://localhost:8080/products)
 
----
-
 ### 2. Сборка и запуск JAR
 
 ```bash
@@ -116,8 +102,6 @@ mvn clean package -DskipTests
 # Запуск (предварительно должна быть запущена БД)
 java -jar target/*.jar --spring.profiles.active=dev
 ```
-
----
 
 ### 3. Запуск в Docker (полный стек)
 
@@ -141,8 +125,6 @@ docker compose down
 docker compose down -v
 ```
 
----
-
 ## Тесты
 
 Покрытие тестами: **79%**
@@ -157,8 +139,6 @@ mvn test
 
 - **Unit-тесты сервисов** — `CartServiceImplTest`, `OrderServiceImplTest`, `ProductServiceImplTest`, `UserServiceImplTest`
 - **WebMvcTest контроллеров** — `CartRestControllerTest`, `OrderRestControllerTest`, `ProductRestControllerTest`, `UserRestControllerTest`, `ProductViewControllerTest`
-
----
 
 ## API
 
