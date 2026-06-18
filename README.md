@@ -10,9 +10,9 @@
 
 ## Showcase
 
-> 📹 **Видео-демонстрация проекта:** _ссылка будет добавлена после записи_
+> 📹 **Видео-демонстрация проекта:**
 
-<!-- [![Showcase](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID) -->
+[![Showcase](https://img.youtube.com/vi/nLFn27XQWGs/maxresdefault.jpg)](https://youtu.be/nLFn27XQWGs)
 
 ## Стек технологий
 
