@@ -1,28 +1,21 @@
 package com.online.store.controller.user.web;
 
-import com.online.store.service.user.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequestMapping("/")
-@RequiredArgsConstructor
 public class UserViewController {
 
-    private final UserService userService;
-
     @GetMapping("/register")
-    public String register() {
-
-        return "register";
+    public Mono<String> register() {
+        return Mono.just("register");
     }
 
     @GetMapping("/login")
-    public String login() {
-
-        return "login";
+    public Mono<String> login() {
+        return Mono.just("login");
     }
 }

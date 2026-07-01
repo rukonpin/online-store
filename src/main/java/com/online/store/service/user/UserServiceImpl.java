@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,29 +26,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void register(UserRegistrationDto user) {
+    public Mono<Void> register(UserRegistrationDto user) {
 
         if (!user.getPassword().equals(user.getConfirmPassword())) {
-            throw new ValidationException("Passwords don't match");
+            return Mono.error(new ValidationException("Passwords don't match"));
         }
 
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new UserExistsException(user.getEmail());
-        }
-
-        userRepository.save(userMapper.toEntity(user));
+        return userRepository.existsByEmail(user.getEmail())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new UserExistsException(user.getEmail()));
+                    }
+                    User newUser = userMapper.toEntity(user);
+                    newUser.setUserUuid(UUID.randomUUID());
+                    return userRepository.save(newUser).then();
+                });
     }
 
     @Override
-    public User login(UserLoginDto userLoginDto) {
+    public Mono<User> login(UserLoginDto userLoginDto) {
 
-        User user = userRepository.findByEmail(userLoginDto.getEmail())
-                .orElseThrow(() -> new AuthenticationUserException("Invalid email or password"));
-
-        if (!user.getPassword().equals(userLoginDto.getPassword())) {
-            throw new AuthenticationUserException("Invalid email or password");
-        }
-
-        return user;
+        return userRepository.findByEmail(userLoginDto.getEmail())
+                .filter(u -> u.getPassword().equals(userLoginDto.getPassword()))
+                .switchIfEmpty(Mono.error(new AuthenticationUserException("Invalid email or password")));
     }
 }
