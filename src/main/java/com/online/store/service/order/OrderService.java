@@ -1,14 +1,15 @@
 package com.online.store.service.order;
 
+import com.online.store.dto.order.OrderDto;
 import com.online.store.model.order.Order;
-import com.online.store.model.order.OrderItem;
-import com.online.store.model.order.OrderStatus;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
-    Order createOrder(UUID userUuid);
-    Order getOrder(UUID orderUuid, UUID userUuid);
-    List<Order> getAllOrders(UUID userUuid);
+    Mono<Order> createOrder(UUID userUuid);
+    Mono<Order> getOrder(UUID orderUuid, UUID userUuid);
+    Flux<Order> getAllOrders(UUID userUuid);
+    Mono<OrderDto> toDtoWithProducts(Order order);
 }
