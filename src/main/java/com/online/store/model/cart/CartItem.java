@@ -1,42 +1,49 @@
 package com.online.store.model.cart;
 
-import com.online.store.model.product.Product;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.lang.Nullable;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "cart_items")
-public class CartItem {
+@Table("cart_items")
+public class CartItem implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue
-    @Column(name = "item_uuid", updatable = false, nullable = false)
-    private UUID uuid;
+    @Column("item_uuid")
+    private UUID itemUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_uuid", nullable = false)
-    private Cart cart;
+    @Column("cart_uuid")
+    private UUID cartUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "product_uuid", nullable = false)
-    private Product product;
+    @Column("product_uuid")
+    private UUID productUuid;
 
-    @Column(nullable = false)
+    @Column("quantity")
     private Integer quantity;
 
-    public BigDecimal getTotalPrice() {
-        if (product == null || product.getPrice() == null || quantity == null) {
-            return BigDecimal.ZERO;
-        }
+    @CreatedDate
+    @Column("created_at")
+    private LocalDateTime createdAt;
 
-        return product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    @Nullable
+    @Override
+    public UUID getId() {
+        return this.itemUuid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
     }
 }
