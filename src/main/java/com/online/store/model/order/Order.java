@@ -1,55 +1,58 @@
 package com.online.store.model.order;
 
-import com.online.store.model.user.User;
-import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.lang.Nullable;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "orders")
-public class Order {
+@Table("orders")
+public class Order implements Persistable<UUID> {
+
     @Id
-    @GeneratedValue
-    @Column(name = "order_uuid", updatable = false, nullable = false)
-    private UUID uuid;
+    @Column("order_uuid")
+    private UUID orderUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "user_uuid", nullable = false)
-    private User user;
+    @Column("user_uuid")
+    private UUID userUuid;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column("status")
     private OrderStatus status;
 
-    @CreationTimestamp
+    @CreatedDate
+    @Column("created_at")
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
+    @Column("updated_at")
     private LocalDateTime updatedAt;
 
-    public BigDecimal getTotalPrice() {
-        if (items == null) {
-            return BigDecimal.ZERO;
-        }
+    @Transient
+    @Builder.Default
+    private List<OrderItem> items = new ArrayList<>();
 
-        return items.stream()
-                .map(OrderItem::getPriceAtPurchase)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    @Nullable
+    @Override
+    public UUID getId() {
+        return this.orderUuid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
     }
 }

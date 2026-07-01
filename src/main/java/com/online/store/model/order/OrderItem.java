@@ -1,44 +1,53 @@
 package com.online.store.model.order;
 
-import com.online.store.model.product.Product;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "order_items")
-public class OrderItem {
+@Table("order_items")
+public class OrderItem implements Persistable<UUID> {
+
     @Id
-    @GeneratedValue
-    @Column(name = "order_item", unique = true, nullable = false)
-    private UUID uuid;
+    @Column("order_item_uuid")
+    private UUID itemUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "order_uuid", nullable = false)
-    private Order order;
+    @Column("order_uuid")
+    private UUID orderUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "product_uuid", nullable = false)
-    private Product product;
+    @Column("product_uuid")
+    private UUID productUuid;
 
-    @Column(nullable = false)
+    @Column("price_at_purchase")
     private BigDecimal priceAtPurchase;
 
-    @Column(nullable = false)
+    @Column("quantity")
     private Integer quantity;
 
-    public BigDecimal getPriceAtPurchase() {
-        if (priceAtPurchase == null || quantity == null) {
-            return BigDecimal.ZERO;
-        }
+    @CreatedDate
+    @Column("created_at")
+    private LocalDateTime createdAt;
 
-        return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));
+    @Nullable
+    @Override
+    public UUID getId() {
+        return this.itemUuid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
     }
 }

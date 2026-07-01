@@ -1,11 +1,11 @@
 package com.online.store.repository.order;
 
 import com.online.store.model.order.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 
-import java.util.List;
 import java.util.UUID;
 
-public interface OrderRepository extends JpaRepository<Order, UUID> {
-    List<Order> findAllByUserUuidOrderByCreatedAtDesc(UUID userUuid);
+public interface OrderRepository extends ReactiveCrudRepository<Order, UUID> {
+    Flux<Order> findAllByUserUuidOrderByCreatedAtDesc(UUID userUuid);
 }
