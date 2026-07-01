@@ -15,11 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +53,7 @@ class UserServiceImplTest {
                 .build();
 
         mockUser = User.builder()
-                .uuid(UUID.randomUUID())
+                .userUuid(UUID.randomUUID())
                 .username("TestUser")
                 .email("test@gmail.com")
                 .password("password123")
@@ -64,11 +64,14 @@ class UserServiceImplTest {
     @DisplayName("Should successfully save new user registered")
     void register_WhenDataIsValid_SavesUser() {
         when(userRepository.existsByEmail(mockUserDto.getEmail()))
-                .thenReturn(false);
+                .thenReturn(Mono.just(false));
         when(userMapper.toEntity(mockUserDto))
                 .thenReturn(mockUser);
+        when(userRepository.save(mockUser))
+                .thenReturn(Mono.just(mockUser));
 
-        userService.register(mockUserDto);
+        StepVerifier.create(userService.register(mockUserDto))
+                .verifyComplete();
 
         verify(userRepository).existsByEmail(mockUserDto.getEmail());
         verify(userMapper).toEntity(mockUserDto);
@@ -78,24 +81,27 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Should throw UserExistsException when email already taken")
     void register_WhenEmailExists_ThrowsUserExistsException() {
-
         when(userRepository.existsByEmail(mockUserDto.getEmail()))
-                .thenReturn(true);
+                .thenReturn(Mono.just(true));
 
-        assertThrows(UserExistsException.class,
-                () -> userService.register(mockUserDto));
+        StepVerifier.create(userService.register(mockUserDto))
+                        .expectErrorMatches(throwable -> throwable instanceof UserExistsException
+                                && throwable.getMessage().equals("User with email " + mockUserDto.getEmail() + " already exists"))
+                                .verify();
+
         verify(userRepository).existsByEmail(mockUserDto.getEmail());
-        verify(userRepository, never()).save(mockUser);
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     @DisplayName("Should throw ValidationException when passwords do not match")
     void register_WhenPasswordsMismatch_ThrowsValidationException() {
-
         mockUserDto.setConfirmPassword("wrong_password");
 
-        assertThrows(ValidationException.class,
-                () -> userService.register(mockUserDto));
+        StepVerifier.create(userService.register(mockUserDto))
+                .expectErrorMatches(throwable -> throwable instanceof ValidationException
+                                                 && throwable.getMessage().equals("Passwords don't match"))
+                .verify();
 
         verifyNoInteractions(userRepository);
     }
@@ -103,12 +109,13 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Should throw AuthenticationUserException when email is not found")
     void login_WhenEmailNotFound_ThrowsException() {
-
         when(userRepository.findByEmail(mockUserLoginDto.getEmail()))
-                .thenReturn(Optional.empty());
+                .thenReturn(Mono.empty());
 
-        assertThrows(AuthenticationUserException.class,
-                () -> userService.login(mockUserLoginDto));
+        StepVerifier.create(userService.login(mockUserLoginDto))
+                .expectErrorMatches(throwable -> throwable instanceof AuthenticationUserException
+                                                 && throwable.getMessage().equals("Invalid email or password"))
+                .verify();
 
         verify(userRepository).findByEmail(mockUserLoginDto.getEmail());
     }
@@ -116,31 +123,31 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Should return user when email exists")
     void login_WhenCredentialsCorrect_ReturnsUser() {
-
         when(userRepository.findByEmail(mockUserLoginDto.getEmail()))
-                .thenReturn(Optional.of(mockUser));
+                .thenReturn(Mono.just(mockUser));
 
-        User result = userService.login(mockUserLoginDto);
+        StepVerifier.create(userService.login(mockUserLoginDto))
+                .expectNextMatches(user -> user.getEmail().equals(mockUser.getEmail()))
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertEquals(mockUser.getEmail(), result.getEmail());
         verify(userRepository).findByEmail(mockUserLoginDto.getEmail());
     }
 
     @Test
     @DisplayName("Should throw AuthenticationUserException when passwords do not match")
     void login_WhenPasswordIncorrect_ThrowsAuthenticationUserException() {
-
         User testUser = User.builder()
                 .email(mockUserLoginDto.getEmail())
                 .password("wrong_password")
                 .build();
 
         when(userRepository.findByEmail(mockUserLoginDto.getEmail()))
-                .thenReturn(Optional.of(testUser));
+                .thenReturn(Mono.just(testUser));
 
-        assertThrows(AuthenticationUserException.class,
-                () -> userService.login(mockUserLoginDto));
+        StepVerifier.create(userService.login(mockUserLoginDto))
+                .expectErrorMatches(throwable -> throwable instanceof AuthenticationUserException
+                                                 && throwable.getMessage().equals("Invalid email or password"))
+                .verify();
 
         verify(userRepository).findByEmail(mockUserLoginDto.getEmail());
     }
