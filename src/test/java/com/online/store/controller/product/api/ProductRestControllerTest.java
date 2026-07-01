@@ -9,33 +9,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 
-@WebMvcTest(ProductRestController.class)
+@WebFluxTest(ProductRestController.class)
+@Import(ProductRestControllerTest.TestWebFluxConfig.class)
 class ProductRestControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private ProductService productService;
@@ -47,12 +47,20 @@ class ProductRestControllerTest {
     private ProductDto testProductDto;
     private UUID testUuid;
 
+    @TestConfiguration
+    static class TestWebFluxConfig implements WebFluxConfigurer {
+        @Override
+        public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
+            configurer.addCustomResolver(new ReactivePageableHandlerMethodArgumentResolver());
+        }
+    }
+
     @BeforeEach
     void setUp() {
         testUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
         testProduct = Product.builder()
-                .uuid(testUuid)
+                .productUuid(testUuid)
                 .name("Test Product")
                 .description("Test Description")
                 .imageUrl("http://test.com/image.jpeg")
@@ -69,99 +77,108 @@ class ProductRestControllerTest {
 
     @Test
     @DisplayName("GET /api/products - should return all products")
-    void getAll_WithoutQuery_ReturnsAllProducts() throws Exception {
-
-        Pageable pageable = PageRequest.of(0, 10);
-        PageImpl<Product> productPage = new PageImpl<>(List.of(testProduct));
-
+    void getAll_WithoutQuery_ReturnsAllProducts() {
         when(productService.getAll(eq(null), any(Pageable.class)))
-                .thenReturn(productPage);
+                .thenReturn(Flux.just(testProduct));
+        when(productService.countAll(null))
+                .thenReturn(Mono.just(1L));
         when(productMapper.toDto(testProduct))
                 .thenReturn(testProductDto);
 
-        mockMvc.perform(get("/api/products")
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.content[0].uuid").value(testUuid.toString()))
-                .andExpect(jsonPath("$.content[0].name").value("Test Product"))
-                .andExpect(jsonPath("$.content[0].price").value(10));
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/products")
+                        .queryParam("sort", "price,asc")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.content").isArray()
+                .jsonPath("$.content[0].uuid").isEqualTo(testUuid.toString())
+                .jsonPath("$.content[0].name").isEqualTo("Test Product")
+                .jsonPath("$.content[0].price").isEqualTo(10);
     }
 
     @Test
     @DisplayName("GET /api/products?query=Test - should search products")
-    void getAll_WithQuery_SearchProducts() throws Exception {
-
+    void getAll_WithQuery_SearchProducts() {
         String searchQuery = "Test";
-        PageImpl<Product> productPage = new PageImpl<>(List.of(testProduct));
 
         when(productService.getAll(eq(searchQuery), any(Pageable.class)))
-                .thenReturn(productPage);
+                .thenReturn(Flux.just(testProduct));
+        when(productService.countAll(searchQuery))
+                .thenReturn(Mono.just(1L));
         when(productMapper.toDto(testProduct))
                 .thenReturn(testProductDto);
 
-        mockMvc.perform(get("/api/products")
-                        .param("query", searchQuery)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value("Test Product"));
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/products")
+                        .queryParam("query", searchQuery)
+                        .queryParam("sort", "price,asc")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content[0].name").isEqualTo("Test Product");
     }
 
     @Test
     @DisplayName("GET /api/products?page=0&size=10 - should return products")
-    void getAll_WithPageable_ReturnsProducts() throws Exception {
-
-        PageImpl<Product> productPage = new PageImpl<>(
-                List.of(testProduct),
-                PageRequest.of(0, 10),
-                1
-        );
-
+    void getAll_WithPageable_ReturnsProducts() {
         when(productService.getAll(eq(null), any(Pageable.class)))
-                .thenReturn(productPage);
+                .thenReturn(Flux.just(testProduct));
+        when(productService.countAll(null))
+                .thenReturn(Mono.just(1L));
         when(productMapper.toDto(testProduct))
                 .thenReturn(testProductDto);
 
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(1)))
-                .andExpect(jsonPath("$.pageable.pageSize").value(10))
-                .andExpect(jsonPath("$.pageable.pageNumber").value(0))
-                .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.totalPages").value(1));
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/products")
+                        .queryParam("page", "0")
+                        .queryParam("size", "10")
+                        .queryParam("sort", "price,asc")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content").isArray()
+                .jsonPath("$.pageable.pageSize").isEqualTo(10)
+                .jsonPath("$.pageable.pageNumber").isEqualTo(0)
+                .jsonPath("$.totalElements").isEqualTo(1)
+                .jsonPath("$.totalPages").isEqualTo(1);
     }
 
     @Test
     @DisplayName("GET /api/products/{uuid} - should return product with current uuid")
-    void getProduct_WithUuid_ReturnsProduct() throws Exception {
-
-        Page<Product> productPage = new PageImpl<>(List.of(testProduct));
-
+    void getProduct_WithUuid_ReturnsProduct() {
         when(productService.getById(testUuid))
-                .thenReturn(testProduct);
+                .thenReturn(Mono.just(testProduct));
         when(productMapper.toDto(testProduct))
                 .thenReturn(testProductDto);
 
-        mockMvc.perform(get("/api/products/{uuid}", testUuid.toString()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid").value(testUuid.toString()))
-                .andExpect(jsonPath("$.name").value("Test Product"));
+        webTestClient.get().uri("/api/products/{uuid}", testUuid)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.uuid").isEqualTo(testUuid.toString())
+                .jsonPath("$.name").isEqualTo("Test Product");
     }
 
     @Test
     @DisplayName("GET /api/products/{uuid} - should throw ProductNotFoundException when product not found")
-    void getProduct_WithNonExistentProduct_ThrowsProductNotFoundException() throws Exception {
+    void getProduct_WithNonExistentProduct_ThrowsProductNotFoundException() {
         UUID uuid = UUID.randomUUID();
 
         when(productService.getById(uuid))
-                .thenThrow(new ProductNotFoundException(uuid));
+                .thenReturn(Mono.error(new ProductNotFoundException(uuid)));
 
-        mockMvc.perform(get("/api/products/{uuid}", uuid.toString()))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Product with this " + uuid + " not found"));
+        webTestClient.get().uri("/api/products/{uuid}", uuid)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Product with this " + uuid + " not found");
     }
 }

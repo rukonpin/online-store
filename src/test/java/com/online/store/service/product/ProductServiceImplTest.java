@@ -10,22 +10,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
-
     @Mock
     private ProductRepository productRepository;
 
@@ -34,98 +33,134 @@ class ProductServiceImplTest {
 
     private Product mockProduct;
     private UUID id;
-    private Pageable pageable;
+    private Pageable pageableAsc;
+    private Pageable pageableDesc;
 
     @BeforeEach
     void setUp() {
         id = UUID.randomUUID();
         mockProduct = Product.builder()
-                .uuid(id)
+                .productUuid(id)
                 .name("Test Product")
                 .price(BigDecimal.TEN)
                 .build();
-        pageable = PageRequest.of(0, 10);
+
+        pageableAsc = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("price")));
+        pageableDesc = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("price")));
     }
+
 
     @Test
     @DisplayName("Should return product when found by UUID")
     void getById_WhenProductExists_ReturnsProduct() {
         when(productRepository.findById(id))
-                .thenReturn(Optional.of(mockProduct));
+                .thenReturn(Mono.just(mockProduct));
 
-        Product result = productService.getById(id);
+        StepVerifier.create(productService.getById(id))
+                .assertNext(result -> {
+                    assertEquals(id, result.getProductUuid());
+                    assertEquals("Test Product", result.getName());
+                })
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertEquals(id, result.getUuid());
-        assertEquals("Test Product", result.getName());
+        verify(productRepository).findById(id);
     }
 
     @Test
     @DisplayName("Should throw ProductNotFoundException when product not found")
     void getById_WhenProductNotFound_ThrowsException() {
         when(productRepository.findById(id))
-                .thenReturn(Optional.empty());
+                .thenReturn(Mono.empty());
 
-        assertThrows(ProductNotFoundException.class,
-                () -> productService.getById(id));
+        StepVerifier.create(productService.getById(id))
+                .expectError(ProductNotFoundException.class)
+                .verify();
+
+        verify(productRepository).findById(id);
     }
 
     @Test
-    @DisplayName("Should return all products when query is null")
-    void getAll_WhenQueryIsNull_ReturnsAllProducts() {
-        Page<Product> expectedPage = new PageImpl<>(List.of(mockProduct));
-        when(productRepository.findAll(pageable)).thenReturn(expectedPage);
+    @DisplayName("Should return products ordered by price ASC when query null and order ASC")
+    void getAll_WhenQueryIsNull_ReturnsProductsOrderedByPriceAsc() {
+        when(productRepository.findAllOrderByPriceAsc(10, 0L))
+                .thenReturn(Flux.just(mockProduct));
 
-        Page<Product> result = productService.getAll(null, pageable);
+        StepVerifier.create(productService.getAll(null, pageableAsc))
+                .expectNext(mockProduct)
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(productRepository).findAll(pageable);
+        verify(productRepository).findAllOrderByPriceAsc(10, 0L);
+        verify(productRepository, never()).findAllOrderByPriceDesc(anyInt(), anyLong());
         verify(productRepository, never()).findByNameContainingIgnoreCase(any(), any());
     }
 
     @Test
-    @DisplayName("Should return all products when query is blank")
-    void getAll_WhenQueryIsBlank_ReturnsAllProducts() {
-        Page<Product> expectedPage = new PageImpl<>(List.of(mockProduct));
-        when(productRepository.findAll(pageable)).thenReturn(expectedPage);
+    @DisplayName("Should return products ordered by price DESC when query null and order DESC")
+    void getAll_WhenQueryIsNullAndOrderIsDesc_ReturnsProductsOrderedByPriceDesc() {
+        when(productRepository.findAllOrderByPriceDesc(10, 0L))
+                .thenReturn(Flux.just(mockProduct));
 
-        Page<Product> result = productService.getAll("     ", pageable);
+        StepVerifier.create(productService.getAll(null, pageableDesc))
+                .expectNext(mockProduct)
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(productRepository).findAll(pageable);
+        verify(productRepository).findAllOrderByPriceDesc(10, 0L);
+        verify(productRepository, never()).findAllOrderByPriceAsc(anyInt(), anyLong());
+        verify(productRepository, never()).findByNameContainingIgnoreCase(any(), any());
     }
 
     @Test
     @DisplayName("Should search product by name when query is provided")
     void getAll_WhenQueryProvided_SearchesByName() {
         String query = "Test";
-        Page<Product> expectedPage = new PageImpl<>(List.of(mockProduct));
-        when(productRepository.findByNameContainingIgnoreCase(query, pageable))
-                .thenReturn(expectedPage);
+        when(productRepository.findByNameContainingIgnoreCase(query, pageableAsc))
+                .thenReturn(Flux.just(mockProduct));
 
-        Page<Product> result = productService.getAll(query, pageable);
+        StepVerifier.create(productService.getAll(query, pageableAsc))
+                .assertNext(result -> assertEquals("Test Product", result.getName()))
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals("Test Product", result.getContent().get(0).getName());
-        verify(productRepository).findByNameContainingIgnoreCase(query, pageable);
-        verify(productRepository, never()).findAll(any(Pageable.class));
+        verify(productRepository).findByNameContainingIgnoreCase(query, pageableAsc);
+        verify(productRepository, never()).findAllOrderByPriceAsc(anyInt(), anyLong());
+        verify(productRepository, never()).findAllOrderByPriceDesc(anyInt(), anyLong());
     }
 
     @Test
     @DisplayName("Should return empty page when no products match query")
     void getAll_WhenNoProductsMatch_ReturnsEmptyPage() {
         String query = "None";
-        Page<Product> emptyPage = Page.empty();
-        when(productRepository.findByNameContainingIgnoreCase(query, pageable))
-                .thenReturn(emptyPage);
+        when(productRepository.findByNameContainingIgnoreCase(query, pageableAsc))
+                .thenReturn(Flux.empty());
 
-        Page<Product> result = productService.getAll(query, pageable);
+        StepVerifier.create(productService.getAll(query, pageableAsc))
+                .verifyComplete();
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(productRepository).findByNameContainingIgnoreCase(query, pageable);
+        verify(productRepository).findByNameContainingIgnoreCase(query, pageableAsc);
+    }
+
+    @Test
+    @DisplayName("Should return count all products when query null")
+    void countAll_WhenQueryIsNull_ReturnsTotalCount() {
+        when(productRepository.count()).thenReturn(Mono.just(5L));
+
+        StepVerifier.create(productService.countAll(null))
+                .expectNext(5L)
+                .verifyComplete();
+
+        verify(productRepository).count();
+        verify(productRepository, never()).countByNameContainingIgnoreCase(any());
+    }
+
+    @Test
+    @DisplayName("Should return count all products when query blank")
+    void countAll_WhenQueryIsBlank_ReturnsTotalCount() {
+        when(productRepository.count()).thenReturn(Mono.just(5L));
+
+        StepVerifier.create(productService.countAll("   "))
+                .expectNext(5L)
+                .verifyComplete();
+
+        verify(productRepository).count();
+        verify(productRepository, never()).countByNameContainingIgnoreCase(any());
     }
 }
