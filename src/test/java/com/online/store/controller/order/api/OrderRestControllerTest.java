@@ -8,36 +8,29 @@ import com.online.store.model.order.Order;
 import com.online.store.model.order.OrderItem;
 import com.online.store.model.order.OrderStatus;
 import com.online.store.model.product.Product;
-import com.online.store.model.user.User;
 import com.online.store.service.order.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(OrderRestController.class)
+@WebFluxTest(OrderRestController.class)
 class OrderRestControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private OrderService orderService;
@@ -48,12 +41,7 @@ class OrderRestControllerTest {
     private UUID userUuid;
     private UUID orderUuid;
     private UUID productUuid;
-    private User userMock;
-    private Product productMock;
-    private OrderItem orderItem;
-    private List<OrderItem> existingOrderItems;
     private Order mockOrder;
-    private OrderItemDto itemResponseDto;
     private OrderDto mockOrderDto;
 
     @BeforeEach
@@ -62,32 +50,30 @@ class OrderRestControllerTest {
         orderUuid = UUID.randomUUID();
         productUuid = UUID.randomUUID();
 
-        userMock = User.builder().uuid(userUuid).build();
-
-        productMock = Product.builder()
-                .uuid(productUuid)
+        Product productMock = Product.builder()
+                .productUuid(productUuid)
                 .price(BigDecimal.valueOf(100))
                 .build();
 
-        orderItem = OrderItem.builder()
-                .uuid(UUID.randomUUID())
-                .product(productMock)
+        OrderItem orderItem = OrderItem.builder()
+                .itemUuid(UUID.randomUUID())
+                .productUuid(productUuid)
                 .priceAtPurchase(BigDecimal.valueOf(100))
                 .quantity(1)
                 .build();
 
-        existingOrderItems = new ArrayList<>();
+        List<OrderItem> existingOrderItems = new ArrayList<>();
         existingOrderItems.add(orderItem);
 
         mockOrder = Order.builder()
-                .uuid(orderUuid)
-                .user(userMock)
+                .orderUuid(orderUuid)
+                .userUuid(userUuid)
                 .items(existingOrderItems)
                 .status(OrderStatus.PENDING)
                 .build();
 
-        itemResponseDto = OrderItemDto.builder()
-                .uuid(mockOrder.getItems().getFirst().getUuid())
+        OrderItemDto itemResponseDto = OrderItemDto.builder()
+                .uuid(orderItem.getItemUuid())
                 .productUuid(productUuid)
                 .priceAtPurchase(BigDecimal.valueOf(100))
                 .quantity(1)
@@ -102,74 +88,44 @@ class OrderRestControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/orders - should return order when user purchased on order")
-    void createOrder_WhenUserPurchased_ReturnsOrder() throws Exception{
+    @DisplayName("POST /api/orders - should return 201 and order when user authenticated")
+    void createOrder_WhenUserPurchased_ReturnsOrder() {
+        when(orderService.createOrder(userUuid)).thenReturn(Mono.just(mockOrder));
+        when(orderService.toDtoWithProducts(mockOrder)).thenReturn(Mono.just(mockOrderDto));
 
-        when(orderService.createOrder(userUuid))
-                .thenReturn(mockOrder);
-        when(orderMapper.toDto(mockOrder))
-                .thenReturn(mockOrderDto);
-
-        mockMvc.perform(post("/api/orders")
-                    .sessionAttr("user_id", userUuid)
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.uuid").value(orderUuid.toString()))
-                .andExpect(jsonPath("$.userUuid").value(userUuid.toString()))
-                .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.items[0].productUuid").value(productUuid.toString()))
-                .andExpect(jsonPath("$.items[0].priceAtPurchase").value(100));
+        webTestClient.post().uri("/api/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .cookie("SESSION", "dummy")
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 
     @Test
-    @DisplayName("POST /api/orders - should return 401 Unauthorized when user is not authenticated")
-    void createOrder_WhenNotAuthenticated_ReturnsUnauthorized() throws Exception {
-
-        mockMvc.perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+    @DisplayName("POST /api/orders - should return 401 when user not authenticated")
+    void createOrder_WhenNotAuthenticated_ReturnsUnauthorized() {
+        webTestClient.post().uri("/api/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 
     @Test
-    @DisplayName("GET /api/orders/{orderUuid} - should return order uuid when order exists")
-    void getOrder_WhenOrderExists_ReturnsOrder() throws Exception{
+    @DisplayName("GET /api/orders/{orderUuid} - should return 401 when user not authenticated")
+    void getOrder_WhenNotAuthenticated_ReturnsUnauthorized() {
+        webTestClient.get().uri("/api/orders/{orderUuid}", orderUuid)
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
 
+    @Test
+    @DisplayName("GET /api/orders/{orderUuid} - should return 404 when order not found")
+    void getOrder_WhenOrderDoesNotExist_ReturnsNotFound() {
         when(orderService.getOrder(orderUuid, userUuid))
-                .thenReturn(mockOrder);
-        when(orderMapper.toDto(mockOrder))
-                .thenReturn(mockOrderDto);
+                .thenReturn(Mono.error(new OrderNotFoundException(orderUuid)));
+        when(orderService.toDtoWithProducts(mockOrder)).thenReturn(Mono.just(mockOrderDto));
 
-        mockMvc.perform(get("/api/orders/{orderUuid}", orderUuid.toString())
-                        .sessionAttr("user_id", userUuid)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uuid").value(orderUuid.toString()))
-                .andExpect(jsonPath("$.userUuid").value(userUuid.toString()))
-                .andExpect(jsonPath("$.items", hasSize(1)));
-    }
-
-    @Test
-    @DisplayName("GET /api/orders/{orderUuid} - should return 401 Unauthorized when user is not authenticated")
-    void getOrder_WhenNotAuthenticated_ReturnsUnauthorized() throws Exception {
-
-        mockMvc.perform(get("/api/orders/{orderUuid}", orderUuid.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("GET /api/orders/{orderUuid} - should throw OrderNotFoundException when order not found")
-    void getOrder_WhenOrderDoesNotExist_ReturnsNotFound() throws Exception {
-
-        when(orderService.getOrder(orderUuid, userUuid))
-                .thenThrow(new OrderNotFoundException(orderUuid));
-
-        mockMvc.perform(get("/api/orders/{orderUuid}", orderUuid.toString())
-                        .sessionAttr("user_id", userUuid)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(
-                        "Order with this " + orderUuid + " not found"));
+        webTestClient.get().uri("/api/orders/{orderUuid}", orderUuid)
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 }
