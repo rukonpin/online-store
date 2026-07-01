@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5434/store
+    url: r2dbc:tc:postgresql:///store?TC_IMAGE_TAG=15
     username: postgres
     password: postgres
   sql:

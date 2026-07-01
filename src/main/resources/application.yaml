@@ -3,11 +3,6 @@ spring:
     name: store
   main:
     banner-mode: off
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
 server:
   port: 8080
