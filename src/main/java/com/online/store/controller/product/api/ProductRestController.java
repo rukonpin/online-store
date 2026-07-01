@@ -5,8 +5,10 @@ import com.online.store.mapper.product.ProductMapper;
 import com.online.store.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -19,13 +21,17 @@ public class ProductRestController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public Page<ProductDto> getAll(@RequestParam(required = false) String query, Pageable pageable) {
-        return productService.getAll(query, pageable)
-                .map(productMapper::toDto);
+    public Mono<Page<ProductDto>> getAll(@RequestParam(required = false) String query, Pageable pageable) {
+        return Mono.zip(
+                productService.getAll(query, pageable).collectList(),
+                productService.countAll(query)
+        )
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
+                        .map(productMapper::toDto));
     }
 
     @GetMapping("/{uuid}")
-    public ProductDto getProduct(@PathVariable UUID uuid) {
-        return productMapper.toDto(productService.getById(uuid));
+    public Mono<ProductDto> getProduct(@PathVariable UUID uuid) {
+        return productService.getById(uuid).map(productMapper::toDto);
     }
 }
