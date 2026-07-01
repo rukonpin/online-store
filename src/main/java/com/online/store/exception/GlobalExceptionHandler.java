@@ -14,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.support.WebExchangeBindException;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -75,6 +76,20 @@ public class GlobalExceptionHandler {
 
         return  ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
+    }
+
+    @ExceptionHandler(WebExchangeBindException.class)
+    public ResponseEntity<ErrorResponse> handlerWebExchangeBind(WebExchangeBindException e) {
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST,
+                        errorMessage
+                ));
     }
 
     @ExceptionHandler(CartItemNotFoundException.class)
