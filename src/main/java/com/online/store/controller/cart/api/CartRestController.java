@@ -3,15 +3,14 @@ package com.online.store.controller.cart.api;
 import com.online.store.dto.cart.CartDto;
 import com.online.store.dto.cart.CartItemDto;
 import com.online.store.dto.cart.UpdateItemQuantityDto;
-import com.online.store.mapper.cart.CartMapper;
-import com.online.store.model.cart.Cart;
 import com.online.store.service.cart.CartService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.WebSession;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -21,83 +20,79 @@ import java.util.UUID;
 public class CartRestController {
 
     private final CartService cartService;
-    private final CartMapper cartMapper;
 
     @GetMapping
-    public ResponseEntity<CartDto> getCart(HttpSession session) {
-        UUID userUuid = (UUID) session.getAttribute("user_id");
+    public Mono<ResponseEntity<CartDto>> getCart(WebSession session) {
+        UUID userUuid = session.getAttribute("user_id");
 
         if (userUuid == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
 
-        Cart cart = cartService.getOrCreateCart(userUuid);
-        CartDto cartDto = cartMapper.toDto(cart);
-
-        return ResponseEntity.ok(cartDto);
+        return cartService.getOrCreateCart(userUuid)
+                .flatMap(cartService::toDtoWithProducts)
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping("/items")
-    public ResponseEntity<CartDto> addItemToCart(
-            HttpSession session,
+    public Mono<ResponseEntity<CartDto>> addItemToCart(
+            WebSession session,
             @Valid @RequestBody CartItemDto itemDto) {
 
         UUID userUuid = (UUID) session.getAttribute("user_id");
 
         if (userUuid == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
 
-        Cart cart = cartService.addItem(userUuid, itemDto);
-        CartDto cartDto = cartMapper.toDto(cart);
-
-        return ResponseEntity.ok(cartDto);
+        return cartService.addItem(userUuid, itemDto)
+                .flatMap(cartService::toDtoWithProducts)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/items/{itemUuid}")
-    public ResponseEntity<CartDto> updateItem(
-            HttpSession session,
+    public Mono<ResponseEntity<CartDto>> updateItem(
+            WebSession session,
             @PathVariable UUID itemUuid,
             @Valid @RequestBody UpdateItemQuantityDto quantityDto) {
 
         UUID userUuid = (UUID) session.getAttribute("user_id");
 
         if (userUuid == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
 
-        Cart cart = cartService.updateItem(userUuid, itemUuid, quantityDto);
-        CartDto cartDto = cartMapper.toDto(cart);
-
-        return ResponseEntity.ok(cartDto);
+        return cartService.updateItem(userUuid, itemUuid, quantityDto)
+                .flatMap(cartService::toDtoWithProducts)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/items/{itemUuid}")
-    public ResponseEntity<CartDto> deleteItem(
-            HttpSession session,
+    public Mono<ResponseEntity<CartDto>> deleteItem(
+            WebSession session,
             @PathVariable UUID itemUuid) {
 
         UUID userUuid = (UUID) session.getAttribute("user_id");
 
         if (userUuid == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
 
-        Cart cart = cartService.removeItem(userUuid, itemUuid);
-        CartDto cartDto = cartMapper.toDto(cart);
-
-        return ResponseEntity.ok(cartDto);
+        return cartService.removeItem(userUuid, itemUuid)
+                .flatMap(cartService::toDtoWithProducts)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping
-    public ResponseEntity<CartDto> cleanCart(HttpSession session) {
+    public Mono<ResponseEntity<CartDto>> cleanCart(WebSession session) {
         UUID userUuid = (UUID) session.getAttribute("user_id");
+
         if (userUuid == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
 
-        Cart cart = cartService.cleanCart(userUuid);
-        CartDto cartDto = cartMapper.toDto(cart);
-        return ResponseEntity.ok(cartDto);
+        return cartService.cleanCart(userUuid)
+                .flatMap(cartService::toDtoWithProducts)
+                .map(ResponseEntity::ok);
     }
 }
