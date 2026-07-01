@@ -1,43 +1,52 @@
 package com.online.store.model.user;
 
-import com.online.store.model.cart.Cart;
-import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "users")
-public class User {
+@Table("users")
+public class User implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue
-    @Column(name = "user_uuid", updatable = false, nullable = false)
-    private UUID uuid;
+    @Column("user_uuid")
+    private UUID userUuid;
 
-    @Column(nullable = false)
+    @Column("username")
     private String username;
 
-    @Column(nullable = false)
+    @Column("password")
     private String password;
 
-    @Column(unique = true, nullable = false)
+    @Column("email")
     private String email;
 
-    @CreationTimestamp
+    @CreatedDate
+    @Column("created_at")
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
+    @Column("updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Cart cart;
+    @Override
+    public UUID getId() {
+        return this.userUuid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
+    }
 }
