@@ -8,8 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    // Entity -> DTO для списка
-    @Mapping(source = "uuid", target = "uuid")
-    @Mapping(source = "description", target = "description")
+    @Mapping(source = "productUuid", target = "uuid")
     ProductDto toDto(Product product);
 }
