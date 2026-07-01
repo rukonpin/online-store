@@ -3,8 +3,9 @@
 Веб-приложение «Витрина интернет-магазина» на Spring Boot — учебный проект
 
 [![Release](https://img.shields.io/badge/release-v1.0-blue)](https://github.com/rukonpin/online-store/releases/tag/v1.0)
+[![Release](https://img.shields.io/badge/release-v2.0-blue)](https://github.com/rukonpin/online-store/releases/tag/v2.0)
 
-> 🚧 В данный момент ведется активная разработка версии `v2.0`— переезд на реактивный стек
+> ⚡ Приложение полностью переведено на реактивный стек: Spring WebFlux + Spring Data R2DBC
 
 Пользователи могут просматривать каталог товаров, добавлять их в корзину и оформлять заказы, просматривать историю 
 заказов. Поддерживается 
@@ -18,15 +19,16 @@
 
 ## Стек технологий
 
-| Слой              | Технология                              |
-|-------------------|-----------------------------------------|
-| Backend           | Java 21, Spring Boot 3                 |
-| Web               | Spring Web MVC, Thymeleaf              |
-| БД                | PostgreSQL 15, Spring Data JPA, Hibernate |
-| Маппинг           | MapStruct                              |
-| Тесты             | JUnit 5, Mockito, Spring Boot Test, MockMvc |
-| Сборка            | Maven                                  |
-| Контейнеризация   | Docker, Docker Compose                 |
+| Слой              | Технология                                             |
+|-------------------|---------------------------------------------------------|
+| Backend           | Java 21, Spring Boot 3                                  |
+| Web               | Spring WebFlux, Thymeleaf                                |
+| БД                | PostgreSQL 15, Spring Data R2DBC                          |
+| Маппинг           | MapStruct                                                |
+| Тесты             | JUnit 5, Mockito, Reactor Test (StepVerifier), Spring Boot Test, WebFluxTest, Testcontainers |
+| Сборка            | Maven                                                    |
+| Контейнеризация   | Docker, Docker Compose                                   |
+
 
 ## Схема базы данных
 
@@ -39,29 +41,54 @@
 src/
 ├── main/
 │   ├── java/com/online/store/
+│   │   ├── config/
+│   │   │   ├── R2dbcConfig.java       # @EnableR2dbcAuditing
+│   │   │   └── WebFluxConfig.java     # реактивный резолвер Pageable
 │   │   ├── controller/
-│   │   │   ├── cart/        # CartRestController, CartViewController
-│   │   │   ├── order/       # OrderRestController, OrderViewController
-│   │   │   ├── product/     # ProductRestController, ProductViewController
-│   │   │   └── user/        # UserRestController, UserViewController
-│   │   ├── dto/             # CartDto, OrderDto, ProductDto, UserDto
-│   │   ├── exception/       # GlobalExceptionHandler + кастомные исключения
+│   │   │   ├── cart/
+│   │   │   │   ├── api/     # CartRestController
+│   │   │   │   └── web/     # CartViewController
+│   │   │   ├── order/
+│   │   │   │   ├── api/     # OrderRestController
+│   │   │   │   └── web/     # OrderViewController
+│   │   │   ├── product/
+│   │   │   │   ├── api/     # ProductRestController
+│   │   │   │   └── web/     # ProductViewController
+│   │   │   └── user/
+│   │   │       ├── api/     # UserRestController
+│   │   │       └── web/     # UserViewController
+│   │   ├── dto/
+│   │   │   ├── cart/        # CartDto, CartItemDto, UpdateItemQuantityDto
+│   │   │   ├── order/       # OrderDto, OrderItemDto
+│   │   │   ├── product/     # ProductDto
+│   │   │   └── user/        # UserLoginDto, UserRegistrationDto
+│   │   ├── exception/
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   ├── ValidationException.java
+│   │   │   ├── cart/, order/, product/, user/   # кастомные исключения
 │   │   ├── mapper/          # MapStruct: CartMapper, OrderMapper, ProductMapper, UserMapper
-│   │   ├── model/           # JPA-сущности: Cart, CartItem, Order, OrderItem, Product, User
-│   │   ├── repository/      # Spring Data JPA репозитории
-│   │   ├── service/         # Интерфейсы и реализации сервисов
+│   │   ├── model/
+│   │   │   ├── ErrorResponse.java
+│   │   │   ├── user/, product/, order/, cart/   # R2DBC-сущности (Persistable<UUID>)
+│   │   ├── repository/      # ReactiveCrudRepository / R2dbcRepository
+│   │   ├── service/         # Интерфейсы и реактивные реализации сервисов (Mono/Flux)
 │   │   └── StoreApplication.java
 │   └── resources/
 │       ├── static/          # CSS, JS, иконки
 │       ├── templates/       # Thymeleaf-шаблоны
+│       ├── schema.sql       # DDL таблиц
+│       ├── data-dev.sql     # тестовые данные для dev-профиля
 │       ├── application.yaml
 │       ├── application-dev.yaml
 │       └── application-test.yaml
 └── test/
     └── java/com/online/store/
-        ├── controller/      # WebMvcTest тесты
-        └── service/         # Unit-тесты сервисов
+        ├── BaseIntegrationTest.java     # база для интеграционных тестов (Testcontainers)
+        ├── StoreIntegrationTest.java    # E2E: регистрация → вход → корзина → заказ
+        ├── controller/       # @WebFluxTest тесты контроллеров
+        └── service/          # unit-тесты сервисов (Mockito + StepVerifier)
 ```
+
 
 ## Запуск
 
@@ -69,8 +96,8 @@ src/
 
 - Java 21+
 - Maven 3.9+
-- Docker и Docker Compose (для запуска в контейнере)
-- PostgreSQL 15 (для локального запуска без Docker)
+- Docker и Docker Compose (для запуска в контейнере и для интеграционных тестов на Testcontainers)
+- PostgreSQL 15 с реактивным драйвером r2dbc-postgresql (можно поднять через Docker Compose)
 
 ### 1. Локально в IDE
 
@@ -129,18 +156,11 @@ docker compose down -v
 
 ## Тесты
 
-Покрытие тестами: **79%**
-
-Тесты запускаются без внешних зависимостей — используется in-memory конфигурация из `application-test.yaml`.
+Покрытие тестами: **82%**
 
 ```bash
 mvn test
 ```
-
-Что покрыто:
-
-- **Unit-тесты сервисов** — `CartServiceImplTest`, `OrderServiceImplTest`, `ProductServiceImplTest`, `UserServiceImplTest`
-- **WebMvcTest контроллеров** — `CartRestControllerTest`, `OrderRestControllerTest`, `ProductRestControllerTest`, `UserRestControllerTest`, `ProductViewControllerTest`
 
 ## API
 
