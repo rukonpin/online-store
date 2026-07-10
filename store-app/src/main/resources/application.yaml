@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: store
+  main:
+    banner-mode: off
+  data:
+    redis:
+      host: localhost
+      port: 6379
+server:
+  port: 8080
+payment-service:
+  base-url: http://localhost:8081
+cache:
+  product:
+    ttl: PT2M

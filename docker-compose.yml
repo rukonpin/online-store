@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
   postgres:
     image: postgres:15
@@ -18,6 +17,25 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: store-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    container_name: payment-service
+    ports:
+      - "8081:8081"
+
   app:
     build: .
     container_name: store-app
@@ -29,9 +47,16 @@ services:
       SPRING_R2DBC_USERNAME: postgres
       SPRING_R2DBC_PASSWORD: postgres
       SPRING_SQL_INIT_MODE: always
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      PAYMENT_SERVICE_BASE_URL: http://payment-service:8081
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      payment-service:
+        condition: service_started
 
 volumes:
   pgdata:
