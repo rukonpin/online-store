@@ -11,6 +11,7 @@ import com.online.store.model.order.OrderStatus;
 import com.online.store.repository.order.OrderItemRepository;
 import com.online.store.repository.order.OrderRepository;
 import com.online.store.service.cart.CartService;
+import com.online.store.service.payment.PaymentClientService;
 import com.online.store.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final OrderMapper orderMapper;
     private final OrderItemRepository orderItemRepository;
+    private final PaymentClientService  paymentClientService;
 
     @Override
     @Transactional
@@ -46,19 +49,22 @@ public class OrderServiceImpl implements OrderService {
                             .status(OrderStatus.PENDING)
                             .build();
 
-                    return orderRepository.save(order)
-                            .flatMap(savedOrder ->
-                                    // 3. Строим список позиций заказа на основе корзины
-                                    buildOrderItems(savedOrder, cart)
-                                            .flatMap(orderItems ->
-                                                    // 4. ФИЗИЧЕСКИ СОХРАНЯЕМ все OrderItem в БД
-                                                    orderItemRepository.saveAll(orderItems)
-                                                            .collectList()
-                                                            .doOnNext(savedOrder::setItems)
-                                                            .thenReturn(savedOrder)
-                                            )
-                            )
-                            // 5. Очищаем корзину пользователя после успешного оформления заказа
+                    return buildOrderItems(order, cart)
+                            .flatMap(orderItems -> {
+                                BigDecimal totalPrice = orderItems.stream()
+                                        .map(item -> item.getPriceAtPurchase()
+                                                .multiply(BigDecimal.valueOf(item.getQuantity())))
+                                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                                return paymentClientService.chargePayment(userUuid, order.getOrderUuid(), totalPrice)
+                                        .then(orderRepository.save(order))
+                                        .flatMap(savedOrder ->
+                                                orderItemRepository.saveAll(orderItems)
+                                                        .collectList()
+                                                        .doOnNext(savedOrder::setItems)
+                                                        .thenReturn(savedOrder)
+                                        );
+                            })
                             .flatMap(savedOrder -> cartService.cleanCart(userUuid)
                                     .thenReturn(savedOrder));
                 });
