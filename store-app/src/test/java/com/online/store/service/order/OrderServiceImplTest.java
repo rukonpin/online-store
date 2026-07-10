@@ -2,6 +2,7 @@ package com.online.store.service.order;
 
 import com.online.store.exception.cart.CartIsEmptyException;
 import com.online.store.exception.order.OrderNotFoundException;
+import com.online.store.mapper.order.OrderMapper;
 import com.online.store.model.cart.Cart;
 import com.online.store.model.cart.CartItem;
 import com.online.store.model.order.Order;
@@ -11,6 +12,7 @@ import com.online.store.model.product.Product;
 import com.online.store.repository.order.OrderItemRepository;
 import com.online.store.repository.order.OrderRepository;
 import com.online.store.service.cart.CartService;
+import com.online.store.service.payment.PaymentClientService;
 import com.online.store.service.product.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +46,12 @@ class OrderServiceImplTest {
 
     @Mock
     private ProductService productService;
+
+    @Mock
+    private OrderMapper orderMapper;
+
+    @Mock
+    private PaymentClientService paymentClientService;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -79,6 +87,10 @@ class OrderServiceImplTest {
                 .thenReturn(Mono.just(mockCart));
         when(productService.getById(productUuid))
                 .thenReturn(Mono.just(productMock));
+
+        when(paymentClientService.chargePayment(any(UUID.class), any(UUID.class), any(BigDecimal.class)))
+                .thenReturn(Mono.empty());
+
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer(invocation -> {
                     Order toSave = invocation.getArgument(0);
