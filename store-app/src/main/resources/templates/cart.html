@@ -76,7 +76,19 @@
                         <span class="cart-summary-delivery-label">Доставка</span>
                         <span class="cart-summary-delivery-value">Бесплатно</span>
                     </div>
-                    <button class="checkout-btn" onclick="handleCheckout()">
+
+                    <div th:if="${paymentServiceAvailable != null and !paymentServiceAvailable}"
+                         class="payment-warning">
+                        Сервис платежей временно недоступен. Оформление заказа невозможно.
+                    </div>
+                    <div th:if="${paymentServiceAvailable != null and paymentServiceAvailable and canCheckout != null and !canCheckout}"
+                         class="payment-warning">
+                        Недостаточно средств на балансе для оформления заказа.
+                    </div>
+
+                    <button class="checkout-btn"
+                            th:disabled="${canCheckout == null or !canCheckout}"
+                            onclick="handleCheckout()">
                         <span>Перейти к оплате</span>
                         <span class="checkout-total"
                               th:text="${#numbers.formatDecimal(cart.totalCartPrice, 0, 'WHITESPACE', 0, 'POINT') + ' ₽'}">

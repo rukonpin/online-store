@@ -28,6 +28,7 @@
                 <div class="user-dropdown-menu">
                     <div class="user-dropdown-header">
                         <span class="user-dropdown-name" th:text="${session.username ?: 'Пользователь'}">Пользователь</span>
+                        <span class="user-dropdown-balance" id="user-balance">Баланс: …</span>
                     </div>
                     <div class="user-dropdown-divider"></div>
                     <button class="user-dropdown-item logout-btn" onclick="handleLogout(event)">
@@ -50,4 +51,5 @@
 
 
         </div>
+    </div>
 </header>

@@ -62,6 +62,13 @@
     padding: 8px;
 }
 
+.user-dropdown-balance {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
 .user-avatar-dropdown:hover .user-dropdown-menu {
     opacity: 1;
     visibility: visible;
