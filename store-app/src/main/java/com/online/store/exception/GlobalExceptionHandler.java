@@ -3,6 +3,8 @@ package com.online.store.exception;
 import com.online.store.exception.cart.CartIsEmptyException;
 import com.online.store.exception.cart.CartItemNotFoundException;
 import com.online.store.exception.order.OrderNotFoundException;
+import com.online.store.exception.payment.InsufficientFundsException;
+import com.online.store.exception.payment.PaymentServiceUnavailableException;
 import com.online.store.exception.product.ProductNotFoundException;
 import com.online.store.exception.user.AuthenticationUserException;
 import com.online.store.exception.user.UserExistsException;
@@ -130,5 +132,17 @@ public class GlobalExceptionHandler {
                         HttpStatus.NOT_FOUND,
                         e.getMessage()
                 ));
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<ErrorResponse> handlerInsufficientFunds(InsufficientFundsException e) {
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED)
+                .body(ErrorResponse.of(LocalDateTime.now(), HttpStatus.PAYMENT_REQUIRED, e.getMessage()));
+    }
+
+    @ExceptionHandler(PaymentServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handlerPaymentServiceUnavailable(PaymentServiceUnavailableException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ErrorResponse.of(LocalDateTime.now(), HttpStatus.SERVICE_UNAVAILABLE, e.getMessage()));
     }
 }
