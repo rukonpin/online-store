@@ -8,9 +8,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -23,18 +25,26 @@ public abstract class BaseIntegrationTest {
             .withUsername("postgres")
             .withPassword("postgres");
 
+    @Container
+    protected static final GenericContainer<?> redis =
+            new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
+                    .withExposedPorts(6379);
+
     @Autowired
     protected WebTestClient webTestClient;
 
     @BeforeAll
     static void beforeAll() {
         postgres.start();
+        redis.start();
     }
 
     @AfterAll
     static void afterAll() {
         postgres.stop();
+        redis.stop();
     }
+
 
     @DynamicPropertySource
     static void r2dbcProperties(DynamicPropertyRegistry registry) {
@@ -46,5 +56,10 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.r2dbc.username", postgres::getUsername);
         registry.add("spring.r2dbc.password", postgres::getPassword);
         registry.add("spring.sql.init.mode", () -> "always");
+
+        registry.add("spring.data.redis.host", redis::getHost);
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
+
+        registry.add("payment-service.base-url", () -> "http://localhost:8081");
     }
 }
